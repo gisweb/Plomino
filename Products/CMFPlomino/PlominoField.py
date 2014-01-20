@@ -38,7 +38,6 @@ import logging
 logger = logging.getLogger('Plomino')
 
 schema = Schema((
-
     StringField(
         name='id',
         widget=StringField._properties['widget'](
@@ -47,6 +46,17 @@ schema = Schema((
             label_msgid=_('CMFPlomino_label_field_id', default="Id"),
             description_msgid=_('CMFPlomino_help_field_id', default="The field id"),
             i18n_domain='CMFPlomino',
+        ),
+    ),
+    TextField(
+        name='FieldDescription',
+        widget=TextAreaWidget(
+            label="Description",
+            description="Field description",
+            label_msgid=_('CMFPlomino_label_Description', default="Description"),
+            description_msgid=_('CMFPlomino_help_Description', default='Field description'),
+            i18n_domain='CMFPlomino',
+            rows=10,
         ),
     ),
     StringField(
