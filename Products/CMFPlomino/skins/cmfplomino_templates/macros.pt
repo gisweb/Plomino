@@ -1,0 +1,10 @@
+<tal:section metal:define-macro="showlabel"
+    tal:define="titleaslabel options/field/TitleAsLabel;
+    widget python:options['field'].getSettings('widget')">
+    <tal:label tal:condition="python: titleaslabel and widget!='HIDDEN'">
+        <label tal:define="label options/field/title"
+            tal:attributes="for options/fieldname"
+            tal:content="label">Here will go the label
+        </label>
+    </tal:label>
+</tal:section>

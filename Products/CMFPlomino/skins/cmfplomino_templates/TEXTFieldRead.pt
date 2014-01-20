@@ -1,6 +1,9 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
                   size python:options['field'].getSettings('size')"
     tal:attributes="class string:TEXTFieldRead-${widget}">
+    <tal:label metal:use-macro="here/macros/macros/showlabel" >
+        display the field title as label
+    </tal:label>
     <tal:widget condition="python:test(widget=='HIDDEN')">
         <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
     </tal:widget>
