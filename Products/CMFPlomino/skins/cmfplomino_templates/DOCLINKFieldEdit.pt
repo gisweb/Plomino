@@ -1,3 +1,6 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label><br />
 <span tal:define="widget python:options['field'].getSettings('widget');
 				selection python:options['selection'];
 				name python:options['fieldname'];

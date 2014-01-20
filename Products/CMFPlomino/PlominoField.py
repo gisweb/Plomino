@@ -169,6 +169,17 @@ schema = Schema((
             i18n_domain='CMFPlomino',
         ),
     ),
+    BooleanField(
+        name='TitleAsLabel',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Use title as label",
+            description="Use title as label",
+            label_msgid=_('CMFPlomino_label_TitleAsLabel', default="Use title as label"),
+            description_msgid=_('CMFPlomino_help_TitleAsLabel', default='Use title as label'),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
 ),
 )
 

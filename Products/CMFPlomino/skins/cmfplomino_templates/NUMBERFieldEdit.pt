@@ -1,3 +1,7 @@
+
 <span tal:define="size python:options['field'].getSettings('size')">
+    <tal:label metal:use-macro="here/macros/macros/showlabel" >
+        display the field title as label
+    </tal:label>
 	<input type="text" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue; size size" />
 </span>

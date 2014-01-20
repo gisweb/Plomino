@@ -1,3 +1,6 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label>
 <span tal:define="fieldname options/fieldname;
                 fieldvalue options/fieldvalue;
                 selection options/selection;

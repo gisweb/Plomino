@@ -1,1 +1,4 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label><br />
 <tal:block tal:content="structure options/fieldvalue">Rich text read template</tal:block>

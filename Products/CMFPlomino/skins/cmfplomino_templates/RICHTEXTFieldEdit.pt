@@ -1,4 +1,7 @@
 <tal:block tal:define="height python:options['field'].getSettings('height');">
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label><br />
 <div class="field"
           tal:define="utool nocall:here/portal_url;
                           portal utool/getPortalObject;
