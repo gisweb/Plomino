@@ -4,5 +4,8 @@
                        fieldformat python:options['field'].getSettings('format');
                        format python:test(not(fieldformat), defaultformat, fieldformat);"
            tal:condition="python:test(v)">
-<tal:block tal:content="python:v.strftime(format)">Datetime read template</tal:block>
+    <tal:label metal:use-macro="here/macros/macros/showlabel" >
+        display the field title as label
+    </tal:label>
+    <tal:block tal:content="python:v.strftime(format)">Datetime read template</tal:block>
 </tal:block>

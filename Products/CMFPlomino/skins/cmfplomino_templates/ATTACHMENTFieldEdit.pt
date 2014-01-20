@@ -1,3 +1,10 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label>
+<tal:break tal:define="multiple python:options['field'].getSettings('type')=='MULTI'"
+    tal:condition="multiple">
+    <br />
+</tal:break>
 <tal:block tal:repeat="attachment options/fieldvalue">
 	<a href="#" tal:attributes="href python:'getfile?filename='+attachment" 
 		tal:content="attachment">filename</a>

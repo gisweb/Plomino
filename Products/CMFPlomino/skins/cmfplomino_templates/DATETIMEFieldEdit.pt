@@ -5,7 +5,9 @@
                        format python:test(not(fieldformat), defaultformat, fieldformat);
                        hm python:('%H' in format or '%I' in format);
                        ymd python:('%Y' in format or '%y' in format)">
-
+    <tal:label metal:use-macro="here/macros/macros/showlabel" >
+        display the field title as label
+    </tal:label>
     <tal:block tal:condition="python:test(v)">
         <span>
             <tal:define tal:define="id options/fieldname;
