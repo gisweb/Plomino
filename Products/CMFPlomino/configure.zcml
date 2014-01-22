@@ -45,6 +45,14 @@
       class=".isDesignMode"
     />
 
+  <browser:page
+        name="iolbootstrapview"
+        for="*"
+        class=".browser.BootstrapView"
+        allowed_interface=".interfaces.IBootstrapView"
+        permission="zope.Public"
+    />
+
   <!-- interfaces moved to zope.container since Plone4.3 /-->
   <subscriber
     zcml:condition="have plone-43"
