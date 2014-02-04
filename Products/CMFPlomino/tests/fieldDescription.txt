@@ -1,0 +1,29 @@
+ 
+Let's start testing::
+
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> db.frm1 == db.getForm('frm1')
+    True
+
+Forms
+---------------
+
+A form allows users to view and/or to edit information.
+A form contains some fields of different types (text, date, rich text, check
+box, attached files, etc.).
+The application designer designs the layout he needs for the form, and he
+inserts the fields wherever he wants.
+A form can also contain some action buttons to trigger specific processing::
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1_3',
+    ...         title='Title for field1_3',
+    ...         FieldType="TEXT",
+    ...         FieldMode="EDITABLE",
+    ...         FieldDescription="This is my field description")
+    >>> db.frm1.field1_3.at_post_create_script()
+    >>> db.frm1.setFormLayout("""1 <p>please enter a value for field1_3:
+    ... <span class="plominoFieldClass">field1_3</span></p>""")
+    >>> 'This is my field description' == db.frm1.field1_3.getFieldDescription()
+    True
