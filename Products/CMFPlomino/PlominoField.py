@@ -53,8 +53,8 @@ schema = Schema((
         widget=TextAreaWidget(
             label="Description",
             description="Field description",
-            label_msgid=_('CMFPlomino_label_Description', default="Description"),
-            description_msgid=_('CMFPlomino_help_Description', default='Field description'),
+            label_msgid=_('CMFPlomino_label_FieldDescription', default="Field Description"),
+            description_msgid=_('CMFPlomino_help_FieldDescription', default='Field description'),
             i18n_domain='CMFPlomino',
             rows=10,
         ),
