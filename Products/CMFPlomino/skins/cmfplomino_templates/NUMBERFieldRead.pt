@@ -1,3 +1,6 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label>
 <tal:block tal:define="v options/fieldvalue;
-                       formatted_value python:options['field'].getSettings().format_value(v)"
-           tal:content="formatted_value">number</tal:block>
+    formatted_value python:options['field'].getSettings().format_value(v)"
+    tal:content="formatted_value">number</tal:block>

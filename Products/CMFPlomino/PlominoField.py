@@ -38,7 +38,6 @@ import logging
 logger = logging.getLogger('Plomino')
 
 schema = Schema((
-
     StringField(
         name='id',
         widget=StringField._properties['widget'](
@@ -47,6 +46,17 @@ schema = Schema((
             label_msgid=_('CMFPlomino_label_field_id', default="Id"),
             description_msgid=_('CMFPlomino_help_field_id', default="The field id"),
             i18n_domain='CMFPlomino',
+        ),
+    ),
+    TextField(
+        name='FieldDescription',
+        widget=TextAreaWidget(
+            label="Description",
+            description="Field description",
+            label_msgid=_('CMFPlomino_label_FieldDescription', default="Field Description"),
+            description_msgid=_('CMFPlomino_help_FieldDescription', default='Field description'),
+            i18n_domain='CMFPlomino',
+            rows=10,
         ),
     ),
     StringField(
@@ -156,6 +166,17 @@ schema = Schema((
             description="Inject DOM attributes in the field tag",
             label_msgid=_('CMFPlomino_label_HTMLAttributesFormula', default="HTML attributes formula"),
             description_msgid=_('CMFPlomino_help_HTMLAttributesFormula', default='Inject DOM attributes in the field tag'),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
+        name='TitleAsLabel',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Use title as label",
+            description="Use title as label",
+            label_msgid=_('CMFPlomino_label_TitleAsLabel', default="Use title as label"),
+            description_msgid=_('CMFPlomino_help_TitleAsLabel', default='Use title as label'),
             i18n_domain='CMFPlomino',
         ),
     ),

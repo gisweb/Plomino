@@ -1,3 +1,6 @@
+<tal:label metal:use-macro="here/macros/macros/showlabel" >
+    display the field title as label
+</tal:label>
 <tal:block tal:define="selection options/selection;
 			lselection python:[f.split('|') for f in selection];
 			current options/fieldvalue;
