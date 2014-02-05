@@ -1,4 +1,5 @@
 <tal:block tal:define="plomino_view python:here;
+    view_url python: '/'.join(plomino_view.getPhysicalPath());
     b plomino_view/ActionBarPosition|nothing;
     hasReadPermission python:test(
         here.hasReadPermission(here)==True and
@@ -16,7 +17,8 @@
         hasRemovePermission python:here.hasRemovePermission(here)==True;
         requiredwidget here/REQUEST/widget|nothing;
         viewwidget python:requiredwidget == 'BASIC' and requiredwidget or here.getWidget();
-        ajaxsource python: '\'../vista/tojson?sSearch=%s\'' % (options.get('sSearch') or '')"
+        request_query python: '' if not options.get('request_query') else 'request_query=%s' % options.get('request_query');
+        ajaxsource python: '\'%s/tojson?%s\'' % (view_url, request_query)"
         tal:condition="python:viewwidget == 'DYNAMICTABLE'">
                         <script type="text/javascript" charset="utf-8"
                             tal:define="params here/DynamicTableParameters;
