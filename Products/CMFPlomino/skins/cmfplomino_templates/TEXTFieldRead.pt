@@ -8,6 +8,6 @@
         <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
     </tal:widget>
     <tal:widget condition="python:test(widget!='HIDDEN')">
-        <tal:block tal:define="v options/fieldvalue" tal:content="structure v">text</tal:block>
+        <tal:block tal:content="structure options/fieldvalue">text</tal:block>
     </tal:widget>
 </span>
