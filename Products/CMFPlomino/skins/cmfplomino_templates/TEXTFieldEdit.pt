@@ -7,9 +7,18 @@
         <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
     </tal:widget>
     <tal:widget tal:condition="python:test(widget=='TEXT')">
-        <input type="text" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue; size size" />
+        <span><span>
+            <input type="text" class="field span12"
+                tal:attributes="id options/fieldname;
+                name options/fieldname;
+                value options/fieldvalue;
+                size size" /></span>
+        </span>
     </tal:widget>
     <tal:widget tal:condition="python:test(widget=='TEXTAREA')">
-        <textarea tal:attributes="id options/fieldname; name options/fieldname; rows size" tal:content="options/fieldvalue">text</textarea>
+        <span><textarea tal:attributes="id options/fieldname;
+            name options/fieldname;
+            rows size"
+            tal:content="options/fieldvalue" /></span>
     </tal:widget>
 </span>
