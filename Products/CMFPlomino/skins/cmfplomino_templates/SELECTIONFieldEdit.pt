@@ -5,7 +5,8 @@
         display the field title as label
     </tal:label>
 	<tal:widget tal:condition="python:test(widget=='SELECT')">
-		<select tal:attributes="id options/fieldname; name options/fieldname"><tal:loop tal:repeat="v selection">
+		<select style="width: 100%" tal:attributes="id options/fieldname;
+            name options/fieldname"><tal:loop tal:repeat="v selection">
 			<option tal:define="current options/fieldvalue;l python:v.split('|')"
 				tal:attributes="value python:l[1]; selected python:test(current==l[1],1,0)"
 				tal:content="python:l[0]">value</option>

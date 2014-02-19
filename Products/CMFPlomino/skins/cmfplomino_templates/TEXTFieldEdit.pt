@@ -1,15 +1,18 @@
 <span tal:define="widget python:options['field'].getSettings('widget');
-    size python:options['field'].getSettings('size');">
+                  mandatory python: 'mandatory' if options['field'].getMandatory() else '';
+                  size python:options['field'].getSettings('size');">
     <tal:label metal:use-macro="here/macros/macros/showlabel" >
         display the field title as label
     </tal:label>
     <tal:widget tal:condition="python:test(widget=='HIDDEN')">
-        <input type="hidden" tal:attributes="id options/fieldname; name options/fieldname; value options/fieldvalue" />
+        <input type="hidden" tal:attributes="id options/fieldname;
+            name options/fieldname; value options/fieldvalue" />
     </tal:widget>
     <tal:widget tal:condition="python:test(widget=='TEXT')">
         <span><span>
-            <input type="text" class="field span12"
+            <input type="text" style="width: 100%"
                 tal:attributes="id options/fieldname;
+                class python: 'field' if not mandatory else 'field mandatory';
                 name options/fieldname;
                 value options/fieldvalue;
                 size size" /></span>
