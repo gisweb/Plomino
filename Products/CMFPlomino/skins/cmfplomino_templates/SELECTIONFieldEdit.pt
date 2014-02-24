@@ -51,7 +51,7 @@
                             value python:l[1];
                             checked python:test(currentaslist and l[1] in currentaslist,1,0);
                             id python:options['fieldname'] + '-' + l[1]">
-                    <span tal:replace="python:l[1]" />
+                    <span tal:replace="python:l[0]" />
                 </label>
                 <tal:sep tal:condition="not:repeat/v/end"
                     tal:content="structure python:options['field'].getSettings('separator')">separator</tal:sep>
