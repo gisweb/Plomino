@@ -291,7 +291,7 @@ jQuery(document).ready( function() {
             </tal:block_ispage>
 
         </tal:block_page>
-        
+
     </tal:main-macro>
 </metal:main>
 

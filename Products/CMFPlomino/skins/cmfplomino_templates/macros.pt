@@ -7,7 +7,10 @@
             tal:attributes="for options/fieldname">
             <span tal:define="label options/field/title"
                 tal:content="label">Here will go the label</span>
-        <span tal:condition="python: mandatory  and context.REQUEST.PARENTS[0].isEditMode()"
-            class="mandatory" title="Obbligatorio">■</span></label>
+        <span tal:condition="python: (mandatory or dataMandatory) and (context.REQUEST.PARENTS[0].isEditMode() or options['fieldvalue'])"
+            title="Obbligatorio"
+            tal:define="titles python: {'mandatory': 'Obbligatorio', 'data-mandatory': 'Obbligatorio per l\'invio'}"
+            tal:attributes="class python: mandatory or dataMandatory;
+                title python: titles.get(mandatory) or titles.get(dataMandatory)">■</span></label>
     </tal:label>
 </tal:section>
