@@ -1,3 +1,4 @@
+<tal:err tal:on-error="structure container/handleError">
 <span tal:define="widget python:options['field'].getSettings('widget');
 				selection options/selection
 				">
@@ -164,3 +165,4 @@
         </div>
 	</tal:widget>
 </span>
+</tal:err>
