@@ -1,3 +1,4 @@
+<tal:err tal:on-error="structure container/handleError">
 <tal:block tal:define="v options/fieldvalue;
                        db python:options['field'].getParentDatabase();
                        defaultformat python:db.getDateTimeFormat();
@@ -10,12 +11,12 @@
     <tal:label metal:use-macro="here/macros/macros/showlabel" >
         display the field title as label
     </tal:label>
-    <tal:widget tal:condition="python:test(widget=='JQUERY')">
-        <input type="date"
-            tal:define="inputvalue python: '' if not options['fieldvalue'] else options['fieldvalue'].strftime('%Y-%m-%d')"
+    <tal:widget tal:condition="python: widget=='JQUERY'">
+        <input type="text"
+            tal:define="inputvalue python: '' if not options['fieldvalue'] else options['fieldvalue'].strftime('%Y-%m-%d');"
             tal:attributes="name options/fieldname;
                 id options/fieldname;
-                class mandatory;
+                class python: 'date' if not mandatory else 'date mandatory';
                 value inputvalue">
     </tal:widget>
     <tal:widget tal:condition="python:test(widget=='SERVER')">
@@ -57,3 +58,4 @@
         </tal:block>
     </tal:widget>
 </tal:block>
+</tal:err>
