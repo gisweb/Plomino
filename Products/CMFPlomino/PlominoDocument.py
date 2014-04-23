@@ -443,7 +443,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 onSaveEvent=False)
 
     security.declareProtected(EDIT_PERMISSION, 'save')
-    def save(self, form=None, creation=False, refresh_index=True,
+    def save(self, form=None, creation=False, refresh_index=False,
             asAuthor=True, onSaveEvent=True):
         """ Refresh values according to form, and reindex the document.
 
@@ -518,6 +518,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
 
+        res = db._mongoUpdate(self)
         if refresh_index:
             # update index
             db.getIndex().indexDocument(self)
@@ -559,6 +560,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             if not self.isReader():
                 raise Unauthorized, "You cannot read this content."
 
+        db._updateDocument(self.getId())
         onOpenDocument_error = self._onOpenDocument(form)
 
         if onOpenDocument_error:

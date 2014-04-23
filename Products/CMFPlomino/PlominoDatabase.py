@@ -240,6 +240,57 @@ PlominoDatabase_schema = getattr(ATFolder, 'schema', Schema(())).copy() + \
 ##code-section after-schema #fill in your manual code here
 ##/code-section after-schema
 
+import pymongo
+import datetime
+import DateTime
+
+#mongo_client = pymongo.MongoClient()
+
+
+class MongoConnection(object):
+
+    def __init__(self, collection, db='plomino', *args, **kw):
+        self.client = pymongo.MongoClient(*args, **kw)
+        self.db = self.client[db.lower()]
+        self.collection = self.db[collection.lower()]
+
+    #def __getstate__(self, *args, **kw):
+        #""" """
+
+    #def getCollection(self):
+        #import ipdb; ipdb.set_trace()
+        #dbname = self.pdb.aq_parent.id.lower()
+        #collection = self.pdb.id.lower()
+        #return self.client[dbname][collection]
+
+    def tomongo(self, doc):
+        """ Starting from a PlominoDocument prepare a record ready to be stored in MongoDB """
+        out = dict(_id=doc.getId())
+        form = doc.getForm() # could be None
+        for item in doc.getItems():
+            value = doc.getItem(item)
+            if isinstance(value, DateTime.DateTime):
+                out[item] = value.asdatetime()
+            elif not form is None:
+                field = form.getFormField(item)
+                if field and field.getFieldType() == "ATTACHMENT":
+                    # per ora by-passo gli attachment
+                    continue
+                else:
+                    out[item] = value
+            else:
+                out[item] = value
+
+        return out
+
+    def toplomino(self, docid):
+        """ """
+        record = self.collection.find_one(dict(_id=docid))
+        if record is None: return None
+
+        for key,value in filter(lambda c: type(c[1]) is datetime.datetime, record.items()):
+            record[key] = DateTime.DateTime(value)
+        return record
 
 class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
         PlominoReplicationManager):
@@ -402,6 +453,31 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
         doc = self.documents.get(docid)
         return doc
 
+    security.declarePublic('_updateDocument')
+    def _updateDocument(self, docid):
+
+        data = MongoConnection(self.id, self.aq_parent.id).toplomino(docid)
+
+        if not data is None:
+            doc = self.documents.get(docid) or self.createDocument(docid=docid)
+
+            for k in filter(lambda i: not i in data, doc.getItems()):
+                doc.removeItem(k)
+
+            for k,v in data.items():
+                if not k in doc.items:
+                    doc.setItem(k, v)
+                elif v!=doc.items[k]:
+                    doc.setItem(k, v)
+
+    security.declareProtected(EDIT_PERMISSION, '_mongoUpdate')
+    def _mongoUpdate(self, doc):
+        connection = MongoConnection(self.id, self.aq_parent.id)
+        data = connection.tomongo(doc)
+        return connection.collection.save(data)
+
+    #def _mongoInsert(self, docid, ):
+
     security.declarePublic('getDocument')
     def getDocument(self, docid):
         """ Return a PlominoDocument, or None. 
@@ -412,6 +488,7 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
         if "/" in docid:
             # let's assume it is a path
             docid = docid.split("/")[-1]
+        self._updateDocument(docid)
         return self.documents.get(docid)
 
     security.declareProtected(READ_PERMISSION, 'getParentDatabase')
@@ -458,6 +535,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
                 self.portal_catalog.uncatalog_object(
                         "/".join(self.getPhysicalPath() + (doc.id,)))
             event.notify(ObjectRemovedEvent(doc, self.documents, doc.id))
+            connection = MongoConnection(self.id, self.aq_parent.id)
+            connection.collection.remove(dict(_id=doc.id))
             self.documents._delOb(doc.id)
 
     security.declareProtected(REMOVE_PERMISSION, 'deleteDocuments')

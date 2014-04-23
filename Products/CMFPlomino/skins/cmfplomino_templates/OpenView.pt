@@ -112,7 +112,7 @@
                                                             condition="python:test(column!=columns[0])">
                                                             <a tal:attributes="href string:${docurl}"
                                                                tal:define="column_name column/id;
-                                                                           column_value python:getattr(brain, here.getIndexKey(column_name), '');
+                                                                           column_value python: getattr(brain, here.getIndexKey(column_name), '');
                                                                            is_date python:same_type(column_value, DateTime())">
                                                                 <span tal:content="structure python:column.getColumnRender(column_value)" ></span>
                                                             </a>
