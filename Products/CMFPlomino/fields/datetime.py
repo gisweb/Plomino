@@ -62,10 +62,15 @@ class DatetimeField(BaseField):
         errors = []
         fieldname = self.context.id
         submittedValue = submittedValue.strip()
+        format = self.context.getParentDatabase().getDateTimeFormat()
+        if not format:
+            format = self.format
+        if not format:
+            format = '%Y-%m-%d'
         try:
             # check if date only:
             if len(submittedValue) == 10:
-                v = StringToDate(submittedValue, '%Y-%m-%d')
+                v = StringToDate(submittedValue, format)
             else:
                 # calendar widget default format is '%Y-%m-%d %H:%M' and
                 # might use the AM/PM format
@@ -84,10 +89,15 @@ class DatetimeField(BaseField):
         """
         """
         submittedValue = submittedValue.strip()
+        format = self.context.getParentDatabase().getDateTimeFormat()
+        if not format:
+            format = self.format
+        if not format:
+            format = '%Y-%m-%d'
         try:
             # check if date only:
             if len(submittedValue) == 10:
-                d = StringToDate(submittedValue, '%Y-%m-%d')
+                d = StringToDate(submittedValue, format)
             else:
                 # calendar widget default format is '%Y-%m-%d %H:%M' and
                 # might use the AM/PM format
