@@ -944,7 +944,7 @@ class PlominoView(ATFolder):
             if reverse=='asc':
                 reverse = 1
 
-        query_request = json.loads(REQUEST['query'])
+        query_request = json.loads(REQUEST.get('query') or '{}')
         # Some fields might express a date
         # We try to convert those strings to datetime
         #indexes = self.aq_parent.aq_base.plomino_index.Indexes
