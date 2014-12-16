@@ -84,7 +84,7 @@ except ImportError:
     URL_NORMALIZER = False
 from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 from zope.event import notify
-from .plominoEvents import plominoSaveEvent
+from PlominoEvents import PlominoSaveEvent
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """ These represent the contents in a Plomino database.
