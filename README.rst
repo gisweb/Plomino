@@ -119,7 +119,6 @@ The complete list is available `here <http://www.plomino.net/credits>`.
 
 Companies
 ---------
-
 |makinacom|_
 
 * `Planet Makina Corpus <http://www.makina-corpus.org>`_
