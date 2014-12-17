@@ -518,7 +518,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     e.reportError('Document saved, but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
-        notify(plominoSaveEvent())
+        notify(PlominoSaveEvent(self))
         if refresh_index:
             # update index
             db.getIndex().indexDocument(self)
