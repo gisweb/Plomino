@@ -826,11 +826,11 @@ class PlominoDesignManager(Persistent):
 
     security.declarePublic('getRenderingTemplate')
     def getRenderingTemplate(self, templatename, request=None):
+        """ Look up a Plomino form or field template from portal skin layers.
         """
-        """
-        skin = self.portal_skins.cmfplomino_templates
-        if hasattr(skin, templatename):
-            pt = getattr(skin, templatename)
+        # The portal_skins machinery will look through layers in order
+        if hasattr(self.portal_skins, templatename):
+            pt = getattr(self.portal_skins, templatename)
             if request:
                 pt.REQUEST = request
             else:
@@ -843,17 +843,13 @@ class PlominoDesignManager(Persistent):
                     # request object to have the template working
                     response = HTTPResponse(stdout=sys.stdout)
                     env = {'SERVER_NAME': 'fake_server',
-                           'SERVER_PORT': '80',
-                           'REQUEST_METHOD': 'GET'}
+                        'SERVER_PORT': '80',
+                        'REQUEST_METHOD': 'GET'}
                     pt.REQUEST = HTTPRequest(sys.stdin, env, response)
-
             # we also need a RESPONSE
             if not pt.REQUEST.has_key('RESPONSE'):
                 pt.REQUEST['RESPONSE'] = HTTPResponse()
-
             return pt
-        else:
-            return None
 
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsZip')
     def exportDesignAsZip(self, designelements=None, dbsettings=True):
@@ -1152,14 +1148,14 @@ class PlominoDesignManager(Persistent):
 
         if replace:
             logger.info("Replace mode: removing current design")
-            designelements = [o.id for o in 
+            designelements = [o.id for o in
                     self.getForms() +
                     self.getViews() +
                     self.getAgents()]
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(
                     self.resources,
-                    # Un-lazify BTree 
+                    # Un-lazify BTree
                     [i for i in self.resources.objectIds()])
             logger.info("Current design removed")
 
