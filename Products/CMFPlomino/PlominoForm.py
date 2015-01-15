@@ -43,6 +43,9 @@ from Products.CMFPlomino.PlominoUtils import DateToString
 from Products.CMFPlomino.PlominoUtils import StringToDate
 from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
+
+
+
 import interfaces
 
 schema = Schema((
@@ -1084,7 +1087,7 @@ class PlominoForm(ATFolder):
         return self._has_fieldtypes(["DATETIME", "DATAGRID"])
 
     security.declarePrivate('_has_fieldtypes')
-    def _has_fieldtypes(self, types):
+    def _has_fieldtypes(self, types, applyhidewhen=True):
         """ ``types`` is a list of strings.
         Check if any of those types are present.
         """
@@ -1099,7 +1102,7 @@ class PlominoForm(ATFolder):
         fields = self.getFormFields(
                 includesubforms=True,
                 doc=tmp,
-                applyhidewhen=True)
+                applyhidewhen=applyhidewhen)
         for f in fields:
             if f.getFieldType() in types:
                 return True
@@ -1109,7 +1112,7 @@ class PlominoForm(ATFolder):
     def hasGoogleVisualizationField(self):
         """ Return true if the form contains at least one GoogleVisualization field
         """
-        return self._has_fieldtypes(["GOOGLEVISUALIZATION"])
+        return self._has_fieldtypes(["GOOGLEVISUALIZATION"], applyhidewhen=False)
 
     security.declarePublic('getSubforms')
     def getSubforms(self, doc=None, applyhidewhen=True, validation_mode=False):
@@ -1516,7 +1519,9 @@ class PlominoForm(ATFolder):
 
         #DBG logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) 
         return json.dumps(result)
-
+    
+    
+            
     def _getDatabaseViews(self):
         db = self.getParentDatabase()
         views = db.getViews()
