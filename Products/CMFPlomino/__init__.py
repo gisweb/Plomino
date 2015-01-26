@@ -219,10 +219,7 @@ allow_module("Products.CMFPlomino.PlominoUtils")
 class PlominoSafeDomains:
     implements(interfaces.IPlominoSafeDomains)
     
-    domains = [
-      # by default, there is no domains allowed
-      # but we can provide a IPlominoSafeDomains utility to declare some
-    ]
+    domains = ['10.95.2.23','10.95.2.82','195.88.6.158']
 
 component.provideUtility(PlominoSafeDomains, interfaces.IPlominoSafeDomains)
 
