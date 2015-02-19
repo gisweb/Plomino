@@ -22,6 +22,9 @@
     });
 
     $(document).on('opendialog',function(e, container){
+        $(container).find('.date').each(function(){
+            $(this).attr("id", this.id +  "_dialog")
+        })
         $(container).find('.date').datepicker().each(initDatePicker)
     });
 
