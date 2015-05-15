@@ -28,6 +28,7 @@ from zope.component import queryUtility, adapts
 from zope.interface import implements
 from ZPublisher.HTTPRequest import FileUpload
 import transaction
+import random
 
 try:
     from AccessControl.class_init import InitializeClass
@@ -859,10 +860,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # ordering and uniqueness than about the time (which can be
                 # found elsewhere on the object).
                 #
-                filename = '%s_%s' % (
-                        DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S.%f"),
-                        filename)
-            
+                #filename = '%s_%s' % (
+                #        DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S.%f"),
+                #        filename)
+                filename = '%s_%s' % (random.randint(1,100000),filename)
+                        
             if HAS_BLOB:
                 if (isinstance(submittedValue, FileUpload) or 
                         type(submittedValue) == file):
