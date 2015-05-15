@@ -860,7 +860,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 # found elsewhere on the object).
                 #
                 filename = '%s_%s' % (
-                        DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S"),
+                        DateTime().toZone('UTC').strftime("%Y%m%d%H%M%S.%f"),
                         filename)
             
             if HAS_BLOB:
