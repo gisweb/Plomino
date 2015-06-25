@@ -219,7 +219,7 @@ allow_module("Products.CMFPlomino.PlominoUtils")
 class PlominoSafeDomains:
     implements(interfaces.IPlominoSafeDomains)
     
-    domains = ['10.95.2.23','10.95.2.82','195.88.6.158']
+    domains = ['10.95.2.23','10.95.2.82','195.88.6.158','grg.gisclient.srv1','testgrg.gisclient.net']
 
 component.provideUtility(PlominoSafeDomains, interfaces.IPlominoSafeDomains)
 
