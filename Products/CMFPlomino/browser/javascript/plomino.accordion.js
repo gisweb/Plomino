@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	// Declare accordions and sub-accordions
+	if($("h6.plomino-accordion-header").length == 0) return;
 	$("h6.plomino-accordion-header").parent().accordion({
 		header: "h6.plomino-accordion-header", active: false, collapsible: true, autoHeight: false
 	});
