@@ -36,7 +36,7 @@
         </tal:has_googleviz>
 
         <tal:block_hasjsresources 
-            tal:define="jsresources python:form.getResourcesJS().splitlines();"
+            tal:define="jsresources python:form.get_resources_js()"
             tal:condition="jsresources"
             tal:repeat="js jsresources">
             <script
@@ -63,7 +63,7 @@
             <link rel="stylesheet" type="text/css" media="all" tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
         </tal:has_date>
         <tal:block_hascssresources
-            tal:define="cssresources python:form.getResourcesCSS().splitlines()"
+            tal:define="cssresources python:form.get_resources_css()"
             tal:condition="cssresources"
             tal:repeat="css cssresources">
             <link rel="stylesheet"

@@ -303,7 +303,7 @@ schema = Schema((
         name='ResourcesJS',
         widget=TextAreaWidget(
             label="JavaScripts",
-            description="JavaScript resources loaded by this form. " \
+            description="JavaScript resources loaded by this form. "
                 "Enter one path per line.",
             label_msgid='CMFPlomino_label_FormResourcesJS',
             description_msgid='CMFPlomino_help_FormResourcesJS',
@@ -314,7 +314,7 @@ schema = Schema((
         name='ResourcesCSS',
         widget=TextAreaWidget(
             label="CSS",
-            description="CSS resources loaded by this form. " \
+            description="CSS resources loaded by this form. "
                 "Enter one path per line.",
             label_msgid='CMFPlomino_label_FormResourcesCSS',
             description_msgid='CMFPlomino_help_FormResourcesCSS',
@@ -350,14 +350,14 @@ class PlominoForm(ATFolder):
 
         form = self
         while getattr(form, 'meta_type', '') != 'PlominoForm':
-            form = obj.aq_parent
+            form = form.aq_parent
         return form
 
     def getFormMethod(self):
         """ Return form submit HTTP method
         """
         # if self.isEditMode():
-        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG 
+        #     Log('POST because isEditMode', 'PlominoForm/getFormMethod') #DBG
         #     return  'POST'
 
         value = self.Schema()['FormMethod'].get(self)
@@ -368,15 +368,44 @@ class PlominoForm(ATFolder):
                 return 'POST'
         return value
 
+    def _get_resource_urls(self, field_name):
+        """ Return canonicalized URLs if local.
+
+        Pass through fully specified URLs and un-found URLs (they may be
+        statically served outside of Zope).
+        """
+        value = self.Schema()[field_name].get(self).splitlines()
+        for url in value:
+            url = url.strip()
+            if url:
+                if not url.lower().startswith(('http', '/')):
+                    if url.startswith('./'):
+                        # unrestrictedTraverse knows '../' but not './'
+                        resource = self.unrestrictedTraverse(url[2:], None)
+                    else:
+                        resource = self.unrestrictedTraverse(url, None)
+                    if resource:
+                        url = resource.absolute_url()
+                    else:
+                        logger.info('Missing resource: %s' % url)
+                        continue
+                yield url
+
+    def get_resources_css(self):
+        return self._get_resource_urls('ResourcesCSS')
+
+    def get_resources_js(self):
+        return self._get_resource_urls('ResourcesJS')
+
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
         """ Create a document using the form's submitted content.
 
-        The created document may be a TemporaryDocument, in case 
-        this form was rendered as a child form. In this case, we 
+        The created document may be a TemporaryDocument, in case
+        this form was rendered as a child form. In this case, we
         aren't adding a document to the database yet.
 
-        If we are not a child form, delegate to the database object 
+        If we are not a child form, delegate to the database object
         to create the new document.
         """
         db = self.getParentDatabase()
@@ -450,7 +479,7 @@ class PlominoForm(ATFolder):
                 )
         cache = db.getRequestCache(cache_key)
         if cache:
-            #DBG logger.info('Cache hit: %s' % `cache`) 
+            #DBG logger.info('Cache hit: %s' % `cache`)
             return cache
         if not request and hasattr(self, 'REQUEST'):
             request = self.REQUEST
@@ -501,7 +530,7 @@ class PlominoForm(ATFolder):
             if report:
                 report = ', '.join(
                         ['%s (occurs %s times)' % (f, c)
-                            for f,c in seen.items() if c > 1])
+                            for f, c in seen.items() if c > 1])
                 logger.debug('Overridden fields: %s' % report)
 
         db.setRequestCache(cache_key, result)
@@ -543,7 +572,7 @@ class PlominoForm(ATFolder):
         return self.id
 
     def _handleLabels(self, html_content_orig, editmode):
-        """ Parse the layout for label tags, 
+        """ Parse the layout for label tags,
 
         - add 'label' or 'fieldset/legend' markup to the corresponding fields.
         - if the referenced field does not exist, leave the layout markup as
@@ -623,7 +652,16 @@ class PlominoForm(ATFolder):
         """ Display the document using the form's layout
         """
         # remove the hidden content
-        html_content = self.applyHideWhen(doc, silent_error=False)
+        if doc is None:
+            db = self.getParentDatabase()
+            hidewhen_target = getTemporaryDocument(
+                db,
+                self,
+                self.REQUEST
+            )
+        else:
+            hidewhen_target = doc
+        html_content = self.applyHideWhen(hidewhen_target, silent_error=False)
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
@@ -744,7 +782,7 @@ class PlominoForm(ATFolder):
         raw_values = []
         for f in field_ids:
             v = doc.getItem(f)
-            # Watch out, this is lossy. Don't use DB date format here, 
+            # Watch out, this is lossy. Don't use DB date format here,
             # use a non-lossy representation.
             if hasattr(v, 'strftime'):
                 raw_values.append(
@@ -871,24 +909,44 @@ class PlominoForm(ATFolder):
 
         return False
 
-    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
-    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
-        """ Return a JSON object to dynamically show or hide hidewhens
+    security.declareProtected(READ_PERMISSION,'getHidewhen')
+    def getHidewhen(self,REQUEST,parent_form=None, doc=None,validation_mode=False):
+        """ Return a python object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
-        db = self.getParentDatabase()
+
+        if parent_form is None:
+            parent_form = self
+
+        db = parent_form.getParentDatabase()
         result = {}
         target = getTemporaryDocument(
                 db,
-                parent_form or self,
+                parent_form,
                 REQUEST,
                 doc,
-                validation_mode=validation_mode).__of__(db)
-        for hidewhen in self.getHidewhenFormulas():
+                validation_mode=validation_mode)
+
+        hidewhens =  parent_form.getHidewhenFormulas()
+        for subformname in self.getSubforms(doc=target):
+            form = db.getForm(subformname)
+            if not form:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, parent_form.id)
+                parent_form.writeMessageOnPage(msg, REQUEST)
+                logger.info(msg)
+                continue
+            hidewhens += form.getHidewhenFormulas()
+
+
+        for hidewhen in hidewhens:
+            if hidewhen.id in result:
+                # Previously hidewhens were run in the context of their own subform. Now we
+                # run then all against the parent_form so there is no need to run it more than once
+                continue
             if getattr(hidewhen, 'isDynamicHidewhen', False):
                 try:
-                    isHidden = self.runFormulaScript(
-                            SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
+                    isHidden = parent_form.runFormulaScript(
+                            SCRIPT_ID_DELIMITER.join(['hidewhen', parent_form.id, hidewhen.id, 'formula']),
                             target,
                             hidewhen.Formula)
                 except PlominoScriptException, e:
@@ -897,19 +955,20 @@ class PlominoForm(ATFolder):
                     #if error, we hide anyway
                     isHidden = True
                 result[hidewhen.id] = isHidden
-        for subformname in self.getSubforms(doc=target):
-            form = db.getForm(subformname)
-            if not form:
-                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
-                self.writeMessageOnPage(msg, self.REQUEST)
-                logger.info(msg)
-                continue
-            form_hidewhens = json.loads(
-                    form.getHidewhenAsJSON(REQUEST,
-                        parent_form=parent_form or self, doc=target,
-                        validation_mode=validation_mode))
-            result.update(form_hidewhens)
 
+        return result
+
+
+    security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
+    def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
+        """ Return a JSON object to dynamically show or hide hidewhens
+        (works only with isDynamicHidewhen)
+        """
+        result = self.getHidewhen(
+            REQUEST,
+            parent_form=parent_form,
+            doc=doc,
+            validation_mode=validation_mode)
         return json.dumps(result)
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
@@ -1021,9 +1080,25 @@ class PlominoForm(ATFolder):
                     self,
                     self.REQUEST).__of__(db)
         if (not invalid) or self.hasDesignPermission(self):
+            editmode=True
+            form_mode = request.get('plomino_form_mode')
+            if form_mode and form_mode == 'READ':
+                editmode=False
+            if form_mode and form_mode == 'EDIT':
+                editmode=True
+
+            alternate_form = request.get('plomino_alternate_form')
+            if alternate_form:
+                form = db.getForm('%s' % alternate_form)
+                return form.displayDocument(
+                    tmp,
+                    editmode=editmode,
+                    creation=False,
+                    request=request
+                )
             return self.displayDocument(
                     tmp,
-                    editmode=True,
+                    editmode=editmode,
                     creation=True,
                     request=request)
         else:
@@ -1285,12 +1360,40 @@ class PlominoForm(ATFolder):
                     errors=json.dumps({'success': True}))
 
 
+    security.declarePrivate('_get_js_hidden_subforms')
+    def _get_js_hidden_subforms(self, REQUEST, doc, validation_mode=False):
+        hidden_forms = []
+        hidewhens = self.getHidewhen(REQUEST, doc=doc,
+                    validation_mode=validation_mode)
+        html_content = self._get_html_content()
+        for hidewhenName, doit in hidewhens.items():
+            if not doit: # Only consider True hidewhens
+                continue
+            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
+                    hidewhenName)
+            end = ('<span class="plominoHidewhenClass">end:%s</span>' %
+                    hidewhenName)
+            for hiddensection in re.findall(
+                    start + '(.*?)' + end,
+                    html_content):
+                hidden_forms += re.findall(
+                    '<span class="plominoSubformClass">([^<]+)</span>',
+                    hiddensection)
+        for subformname in self.getSubforms(doc):
+            subform = self.getParentDatabase().getForm(subformname)
+            if not subform:
+                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
+                self.writeMessageOnPage(msg, self.REQUEST)
+                logger.info(msg)
+                continue
+            hidden_forms += subform._get_js_hidden_subforms(REQUEST, doc)
+        return hidden_forms
+
     security.declarePrivate('_get_js_hidden_fields')
     def _get_js_hidden_fields(self, REQUEST, doc, validation_mode=False):
         hidden_fields = []
-        hidewhens = json.loads(
-                self.getHidewhenAsJSON(REQUEST, doc=doc,
-                    validation_mode=validation_mode))
+        hidewhens = self.getHidewhen(REQUEST, doc=doc,
+                    validation_mode=validation_mode)
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
             if not doit:  # Only consider True hidewhens
@@ -1319,7 +1422,7 @@ class PlominoForm(ATFolder):
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         """
-        """ 
+        """
         db = self.getParentDatabase()
         tmp = getTemporaryDocument(
                 db,
@@ -1335,11 +1438,23 @@ class PlominoForm(ATFolder):
                 applyhidewhen=True,
                 validation_mode=True,
                 request=REQUEST)
+
         hidden_fields = self._get_js_hidden_fields(
                 REQUEST,
                 # doc,
                 tmp,
                 validation_mode=True)
+
+        hidden_forms = self._get_js_hidden_subforms(
+                REQUEST,
+                # doc,
+                tmp,
+                validation_mode=True)
+        for form_id in hidden_forms:
+            form = db.getForm(form_id)
+            for field in form.getFormFields():
+                hidden_fields.append(field.getId())
+
         fields = [field for field in fields
                 if field.getId() not in hidden_fields]
 
@@ -1481,7 +1596,7 @@ class PlominoForm(ATFolder):
         return True
 
     security.declarePublic('tojson')
-    def tojson(self, REQUEST=None, item=None):
+    def tojson(self, REQUEST=None, item=None, rendered=False):
         """ Return field value as JSON.
         If item=None, return all field values.
         (Note: we use 'item' instead of 'field' to match the
@@ -1493,6 +1608,9 @@ class PlominoForm(ATFolder):
                     'content-type',
                     'application/json; charset=utf-8')
             item = REQUEST.get('item', item)
+            rendered_str = REQUEST.get('rendered', None)
+            if rendered_str:
+                rendered = True
             datatables_format_str = REQUEST.get('datatables', None)
             if datatables_format_str:
                 datatables_format = True
@@ -1510,6 +1628,9 @@ class PlominoForm(ATFolder):
             if field:
                 adapt = field.getSettings()
                 result = adapt.getFieldValue(self, request=REQUEST)
+                if field.getFieldType() == 'DATAGRID':
+                    result = adapt.rows(
+                            result, rendered=rendered)
 
         if datatables_format:
             result = {
@@ -1517,7 +1638,7 @@ class PlominoForm(ATFolder):
                     'iTotalDisplayRecords': len(result),
                     'aaData': result}
 
-        #DBG logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) 
+        logger.info('PlominoForm.tojson> item: %s, result: %s' % (`item`, `result`[:20])) #DBG
         return json.dumps(result)
     
     

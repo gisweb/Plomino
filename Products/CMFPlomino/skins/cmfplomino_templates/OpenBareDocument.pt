@@ -4,6 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       i18n:domain="plone">
+      
 <body>
 <div id="content">
   <tal:block tal:define="myF python:here.getForm();
