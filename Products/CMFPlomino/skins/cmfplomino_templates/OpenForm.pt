@@ -23,7 +23,7 @@
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block_hasgooglevisualizationfield>
     <tal:block_hasjsresources 
-        tal:define="jsresources python:here.getResourcesJS().splitlines()"
+        tal:define="jsresources python:here.get_resources_js()"
         tal:condition="jsresources"
         tal:repeat="js jsresources">
         <script
@@ -42,7 +42,7 @@
             tal:attributes="href string:$portal_url/jscalendar/calendar-system.css" />
     </tal:block_hasdatetimefield>
     <tal:block_hascssresources
-        tal:define="cssresources python:here.getResourcesCSS().splitlines()"
+        tal:define="cssresources python:here.get_resources_css()"
         tal:condition="cssresources"
         tal:repeat="css cssresources">
         <link rel="stylesheet"
@@ -190,14 +190,25 @@
                         <tal:results
                             define="searchviewname python:here.getSearchView();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
+                                    searchviewfound python: searchviewobj is not None;
                                     ">
                             <tal:block_no_view_found
-                                condition="not:searchviewobj"
-                                define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                                condition="not:searchviewfound">
+                                <span tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                            </tal:block_no_view_found>
 
-                            <tal:block_view_found condition="searchviewobj">
+                            <tal:block_view_found condition="searchviewfound">
                                 <table 
                                     tal:define="results python:options.get('searchresults');
+                                                count python:len(results) if results else 0;
+                                                paramstart request/start|python:'1';
+                                                paramlimit request/limit|python:'100';
+                                                start python:int(paramstart);
+                                                limit python:int(paramlimit);
+                                                overlimit python:count>limit;
+                                                nextstart python:start+limit;
+                                                previousstart python:max(1,start-limit);
+                                                query_string python:'&'.join(['='.join([x,y]) for (x,y) in request.form.items() if x != 'limit' and x != 'start']);
                                                 columns python:searchviewobj.getColumns()"
                                     id="sortable"
                                     class="listing"
@@ -212,7 +223,7 @@
                                     </tr>
                                     <tal:block_result_rows 
                                         condition="results"
-                                        repeat="doc results">
+                                        repeat="doc python:results[start-1:start-1+limit]">
 
                                         <tr tal:define="
                                                 oddrow repeat/doc/odd;
@@ -230,6 +241,27 @@
                                             </tal:block_column_values>
                                         </tr>
                                     </tal:block_result_rows>
+
+                                    <!-- DOC COUNTING -->
+                                    <tal:block_result_pagination condition="results">
+                                        <tr>
+                                            <th tal:attributes="colspan python:len(columns)+1"><tal:previous
+                                                condition="python:start>1">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:'/'.join(context.getPhysicalPath())+'/searchDocuments?'+query_string+'&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
+                                            </tal:previous>
+                                            <tal:count i18n:translate="documents_count">
+                                                 Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
+                                                 <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
+                                                 of <span i18n:name="total" tal:content="count">count</span>
+                                            </tal:count>
+                                            <tal:next condition="python:count>start+limit">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'/searchDocuments?'+query_string+'&start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
+                                            </tal:next></th>
+                                        </tr>
+                                    </tal:block_result_pagination>
+
                                 </table>
                             </tal:block_view_found>
                         </tal:results>
@@ -259,6 +291,7 @@
                             enctype enctype|nothing
                             "
                     id="plomino_form">
+                    <tal:validation metal:use-macro="here/validation_messages/macros/messages">display form actions</tal:validation>
                     <span tal:content="structure python:here.openBlankForm(request)" />
                 </form>
                 <div tal:replace="structure provider:plone.belowcontentbody" />

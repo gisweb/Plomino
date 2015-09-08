@@ -8,6 +8,7 @@
                   form_method python:form.getFormMethod();
                   "
       >
+
 <body>
 <div id="content">
   <tal:block tal:define="b form/ActionBarPosition|nothing">

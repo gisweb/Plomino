@@ -1159,8 +1159,8 @@ class PlominoDesignManager(Persistent):
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(
                     self.resources,
-                    # Un-lazify BTree 
-                    [i for i in self.resources.objectIds()])
+                    # Un-lazify BTree
+                    list(self.resources.objectIds()))
             logger.info("Current design removed")
 
         for xmlstring in xml_strings:
@@ -1212,11 +1212,14 @@ class PlominoDesignManager(Persistent):
         total = 0
         if replace:
             logger.info("Replace mode: removing current design")
-            designelements = [o.id for o in self.getForms()] \
-                                 + [o.id for o in self.getViews()] \
-                                 + [o.id for o in self.getAgents()]
+            designelements = (
+                    [o.id for o in self.getForms()] +
+                    [o.id for o in self.getViews()] +
+                    [o.id for o in self.getAgents()])
             ObjectManager.manage_delObjects(self, designelements)
-            ObjectManager.manage_delObjects(self.resources, self.resources.objectIds())
+            ObjectManager.manage_delObjects(
+                    self.resources,
+                    list(self.resources.objectIds()))
             logger.info("Current design removed")
         total_elements = None
         file_names = zip_file.namelist()

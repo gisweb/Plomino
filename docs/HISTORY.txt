@@ -1,6 +1,37 @@
 Changelog
 =========
 
+1.19.5 (unreleased)
+-------------------
+
+- Enable fields validation in Page forms [ebrehault]
+- Allow to define a custom JS validation callback (window.plomino_custom_validation_callback) [ebrehault]
+- Pass a TemporaryDocument context to hidewhen evaluation [instification]
+- Allow to display request data with alternate forms and read/edit mode [instification]
+- Check for hidden subforms when validating inputs [instification]
+- Adapt to rows for datagrid field in PlominoForm.tojson [instification]
+
+1.19.4 (2015-04-10)
+-------------------
+
+- Fix isCurrentUserAuthor (the doc creator is always Onwer, so we should test Plone rights
+  in the db context, not the doc) [ebrehault]
+
+
+1.19.3 (2015-02-27)
+-------------------
+- Fix sorting of view docs [jean]
+- Fix importDesignFromZip for when there are script resources [jean]
+- Generate canonical URLs for local resources [jean]
+
+1.19.2 (2015-01-09)
+-------------------
+* Forgot to bump the version string [jean]
+
+1.19.1 (2015-01-06)
+-------------------
+* Enable standard behaviour when looking up portal_skins resources [jean]
+
 1.19 (2014-10-15)
 -----------------
 * Allow to post data with open_url util [manuelep]
@@ -56,7 +87,7 @@ Changelog
 
 1.17.5 (2013-09-24)
 -------------------
-* Reorder validation, so that submitted values can be 
+* Reorder validation, so that submitted values can be
   massaged [jean]
 * Enable Views to use field rendering [jean]
 * Allow forms to specify their HTTP submit method [jean]
@@ -206,7 +237,7 @@ Changelog
 * fix reader access control on getfile
 * add cgi_escape to utils
 * create plomino_workflow and fix permissions
-* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb 
+* integrate plone.app.async support to enable asynchronous agent execution and asynchronous refreshdb
 * allow to run agent as current user or as owner
 * don't use File for everything in /resources/; use Script (Python) for script libraries
 
@@ -329,7 +360,7 @@ Changelog
 * Excel export method on views.
 * Categorized views supported with dynamic mode.
 * Fix file attachment bug under Plone 4.
-* 
+*
 
 1.7.4
 -----
