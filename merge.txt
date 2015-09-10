@@ -1,0 +1,29 @@
+Da https://github.com/plomino/Plomino
+ * branch            github-main -> FETCH_HEAD
+Auto-merging README.rst
+Auto-merging Products/CMFPlomino/tests/plomino.txt
+Auto-merging Products/CMFPlomino/skins/cmfplomino_templates/OpenForm.pt
+
+Auto-merging Products/CMFPlomino/skins/cmfplomino_templates/OpenBareForm.pt
+CONFLICT (content): Merge conflict in Products/CMFPlomino/skins/cmfplomino_templates/OpenBareForm.pt --- ripristinato originale
+
+Auto-merging Products/CMFPlomino/skins/cmfplomino_templates/OpenBareDocument.pt
+CONFLICT (content): Merge conflict in Products/CMFPlomino/skins/cmfplomino_templates/OpenBareDocument.pt --- ripristinato originale
+
+Auto-merging Products/CMFPlomino/skins/cmfplomino_templates/EditDocument.pt
+
+Auto-merging Products/CMFPlomino/skins/cmfplomino_templates/EditBareDocument.pt
+CONFLICT (content): Merge conflict in Products/CMFPlomino/skins/cmfplomino_templates/EditBareDocument.pt --- ripristinato originale
+
+Auto-merging Products/CMFPlomino/fields/datetime.py
+Auto-merging Products/CMFPlomino/__init__.py
+CONFLICT (content): Merge conflict in Products/CMFPlomino/__init__.py
+Auto-merging Products/CMFPlomino/PlominoView.py
+Auto-merging Products/CMFPlomino/PlominoForm.py
+Auto-merging Products/CMFPlomino/PlominoDocument.py
+CONFLICT (content): Merge conflict in Products/CMFPlomino/PlominoDocument.py
+Auto-merging Products/CMFPlomino/PlominoDesignManager.py
+CONFLICT (content): Merge conflict in Products/CMFPlomino/PlominoDesignManager.py
+Auto-merging .travis.yml
+Merge automatico fallito; risolvi i conflitti ed eseguire il commit
+del risultato.
