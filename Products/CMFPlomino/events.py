@@ -6,6 +6,9 @@
 #
 # Zope Public License (ZPL)
 #
+from zope.component.interfaces import ObjectEvent
+from zope.interface import implements
+from .interfaces import IPlominoAfterDocumentSaveEvent
 
 __author__ = """Xavier PERROT <xavier.perrot@makina-corpus.com>"""
 __docformat__ = 'plaintext'
@@ -33,3 +36,8 @@ def PlominoDocumentRemoveEventHandler(obj, event):
     #TODO : find how to know if confirmation has been done
     #return
     pass
+
+
+class PlominoAfterDocumentSaveEvent(ObjectEvent):
+    """An object has been modified"""
+    implements(IPlominoAfterDocumentSaveEvent)

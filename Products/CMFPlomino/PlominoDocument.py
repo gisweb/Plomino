@@ -85,7 +85,7 @@ except ImportError:
     URL_NORMALIZER = False
 from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 from zope.event import notify
-#from PlominoEvents import PlominoSaveEvent
+from events import PlominoAfterDocumentSaveEvent
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """ These represent the contents in a Plomino database.
@@ -521,7 +521,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
         
-#        notify(PlominoSaveEvent(self))
+        notify(PlominoAfterDocumentSaveEvent(self))
         
         if refresh_index:
             # update index
