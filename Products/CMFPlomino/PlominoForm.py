@@ -368,6 +368,11 @@ class PlominoForm(ATFolder):
                 return 'POST'
         return value
 
+    def get_resources_css(self):
+        return self.getResourcesCSS().splitlines()
+    def get_resources_js(self):
+        return self.getResourcesJS().splitlines()
+
     security.declareProtected(READ_PERMISSION, 'createDocument')
     def createDocument(self, REQUEST):
         """ Create a document using the form's submitted content.
