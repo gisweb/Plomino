@@ -2,9 +2,12 @@
     "use strict";
 
     function refreshHidewhen() {
+        var $element = $(this)
         var onsuccess = function(data, textStatus, xhr) {
-            for (var hw in data)
-                $('.hidewhen-' + hw).css('display', data[hw]?'none':'block');
+            for (var hw in data){
+                var $hw = $element.closest('form').find('.hidewhen-' + hw)
+                $hw.css('display', data[hw]?'none':'block');
+            }
         }
         
         $.ajax({
@@ -32,5 +35,21 @@
         $("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
 
     });
+
+
+
+
+    //INIZIALIZZO TUTTO IL CONTENUTO DEL DIALOG DOPO AVER APERTO IL DIALOG DEL DATAGRID
+    $(document).on('opendialog',function(_, container){
+        var elementName;
+        $("input:checkbox[data-dhw = 1],input:radio[data-dhw = 1]").each(function(_,el){
+            elementName = $(el).attr("name");
+            $("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
+        })
+        $("input:text[data-dhw = 1],select[data-dhw = 1]").on("change",refreshHidewhen);
+        $("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
+
+    });
+
 
 })(jQuery);
