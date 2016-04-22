@@ -26,7 +26,7 @@
         $(this).closest('form').find(hw).toggle();
     };
 
-    $(function () {
+    function toggleHidewhen(){
         var elementName;
         $("input:checkbox[data-dhw = 1],input:radio[data-dhw = 1]").each(function(_,el){
             elementName = $(el).attr("name");
@@ -34,7 +34,17 @@
         })
         $("input:text[data-dhw = 1],select[data-dhw = 1]").on("change",refreshHidewhen);
         $("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
+    }
 
+    $(function () {
+        toggleHidewhen();
     });
+
+    //INIZIALIZZO TUTTO IL CONTENUTO DEL DIALOG DOPO AVER APERTO IL DIALOG DEL DATAGRID
+    $(document).on('opendialog',function(_, container){
+        toggleHidewhen();
+    });
+
+
 
 })(jQuery);
