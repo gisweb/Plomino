@@ -9,10 +9,11 @@
                 $hw.css('display', data[hw]?'none':'block');
             }
         }
-        
+        var act = $(this).closest('form').attr("action");
+        var baseUrl = act.substring(0,act.lastIndexOf('/'))
         $.ajax({
             type: 'POST',
-            url: 'computehidewhens',
+            url: baseUrl + '/computehidewhens',
             data: $(this).closest('form').serialize(),
             success: onsuccess,
             dataType: 'json' 
@@ -26,25 +27,23 @@
         $(this).closest('form').find(hw).toggle();
     };
 
-    function toggleHidewhen(){
+    function toggleHidewhen(container){
         var elementName;
-        $("input:checkbox[data-dhw = 1],input:radio[data-dhw = 1]").each(function(_,el){
+        $(container).find("input:checkbox[data-dhw = 1],input:radio[data-dhw = 1]").each(function(_,el){
             elementName = $(el).attr("name");
-            $("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
+            $(container).find("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
         })
-        $("input:text[data-dhw = 1],select[data-dhw = 1]").on("change",refreshHidewhen);
-        $("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
+        $(container).find("input:text[data-dhw = 1],select[data-dhw = 1]").on("change",refreshHidewhen);
+        $(container).find("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
     }
 
     $(function () {
-        toggleHidewhen();
+        toggleHidewhen(".plomino_form");
     });
 
     //INIZIALIZZO TUTTO IL CONTENUTO DEL DIALOG DOPO AVER APERTO IL DIALOG DEL DATAGRID
     $(document).on('opendialog',function(_, container){
-        toggleHidewhen();
+        toggleHidewhen(container);
     });
-
-
 
 })(jQuery);
