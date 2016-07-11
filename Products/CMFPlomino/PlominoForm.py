@@ -1150,6 +1150,7 @@ class PlominoForm(ATFolder):
                 includesubforms=True,
                 doc=doc,
                 request=REQUEST)
+#        import pdb;pdb.set_trace()
         if applyhidewhen:
             displayed_fields = self.getFormFields(
                     includesubforms=True,

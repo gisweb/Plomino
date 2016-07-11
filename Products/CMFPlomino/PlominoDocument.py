@@ -411,7 +411,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return form.notifyErrors(errors)
 
         self.setItem('Form', form.getFormName())
-
         # process editable fields (we read the submitted value in the request)
         form.readInputs(self, REQUEST, process_attachments=True)
 

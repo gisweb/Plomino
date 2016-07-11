@@ -200,7 +200,6 @@ class PlominoField(BaseContent, BrowserDefaultMixin):
         fieldtype = self.getFieldType()
         fieldname = self.id
         adapt = self.getSettings()
-
         if fieldtype=="ATTACHMENT" and process_attachments:
             
             if isinstance(submittedValue, FileUpload):
