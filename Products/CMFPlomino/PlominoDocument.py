@@ -520,6 +520,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     self.REQUEST.RESPONSE.redirect(doc_path)
         
         notify(PlominoSaveEvent(self))
+        notify(PlominoAfterDocumentSaveEvent(self))
+
         
         if refresh_index:
             # update index
