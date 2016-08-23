@@ -83,6 +83,15 @@ schema = Schema((
         ),
     ),
     BooleanField(
+        name='RenderField',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Render field",
+            label_msgid=_('CMFPlomino_label_RenderField', default="Render field"),
+            i18n_domain='CMFPlomino',
+        ),
+    ),
+    BooleanField(
         name='DisplaySum',
         default="0",
         widget=BooleanField._properties['widget'](
