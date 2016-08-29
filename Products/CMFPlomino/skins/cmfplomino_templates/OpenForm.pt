@@ -150,7 +150,8 @@
             <tal:block_searchform
                 condition="python:searchform"
                 define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
-                        hasReadPermissionOnForm python:test(here.hasReadPermission(here));">
+                hasReadPermissionOnForm python:test(here.hasReadPermission(here));
+                hasRemovePermission python:here.hasRemovePermission(here)==True;">
 
                 <form 
                     tal:define="
@@ -158,6 +159,7 @@
                             "
                     tal:attributes="
                             name form/id;
+                            class string:plomino_form;
                             action string:${form/absolute_url}/searchDocuments;
                             method form_method;
                             enctype enctype|nothing
@@ -190,12 +192,95 @@
                         <tal:results
                             define="searchviewname python:here.getSearchView();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
+                                    searchviewwidget python: searchviewobj.getWidget() or 'BASIC';
                                     ">
                             <tal:block_no_view_found
                                 condition="not:searchviewobj"
                                 define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
 
-                            <tal:block_view_found condition="searchviewobj">
+                            <tal:block_view_dynamic_found condition="python:searchviewobj and searchviewwidget == 'DYNAMICTABLE'">
+
+
+                                <script type="text/javascript" charset="utf-8"
+                                    tal:define="params searchviewobj/DynamicTableParameters;
+                                                iscategorized python:getattr(searchviewobj, 'Categorized', False);
+                                                categorized python:iscategorized and 'true' or 'false';
+                                                fixedsorting python:iscategorized and '\'aaSortingFixed\': [[1, \'asc\']],' or '';
+                                                fixedcol1size python:iscategorized and '{ \'aTargets\': [1], \'sWidth\': \'0\' },' or '';
+                                                hideCheckboxes searchviewobj/HideCheckboxes|nothing;
+                                                display_checkboxes python:test(hasRemovePermission and not(hideCheckboxes), 'true', 'false')"
+                                    tal:content="structure string:
+                                                 var oDynamicTable;
+                                                 jQuery(document).ready(function() {
+                                                        oDynamicTable = jQuery('#dynamictable').dataTable( {
+                                                            'aaSorting': [],
+                                                            'bJQueryUI': true,
+                                                            'bProcessing': true,
+                                                            'sAjaxSource': '../${searchviewobj/id}/tojson',
+                                                            'bServerSide': true,
+                                                            ${params},
+                                                            'aoColumnDefs': [
+                                                                { 'aTargets': ['_all'],
+                                                                  'bUseRendered': false,
+                                                                  'fnRender': dynamicview_generate_cells_content($display_checkboxes)
+                                                                },
+                                                                ${fixedcol1size}
+                                                                { 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' }
+                                                            ],
+                                                            ${fixedsorting}
+                                                            'fnDrawCallback': function() {
+                                                                this.fnSetFilteringLimit(1);
+                                                                if (${categorized}) {
+                                                                    dynamicview_categorize('dynamictable');
+                                                                }
+                                                            },
+                                                            // Move to field settings?
+                                                            // 'fnFooterCallback': generateTableFooter,
+                                                            'oLanguage': {
+                                                                'sUrl': '@@collective.js.datatables.translation'
+                                                            }
+                                                        });
+                                                        var tableNodes = oDynamicTable.fnGetNodes();
+                                                        jQuery('td > input:checkbox', tableNodes).change(function() {
+                                                            jQuery(this).closest('tr').toggleClass('row_selected');
+                                                        });
+                                                    });">
+                                </script>
+
+                                <table class="display" id="dynamictable" tal:define="columns searchviewobj/getColumns">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <tal:column_titles repeat="column columns">
+                                                <th tal:condition="not: column/HiddenColumn|nothing"
+                                                    tal:content="column/Title"
+                                                    tal:attributes="class python:getattr(column, 'DisplaySum') and 'displaysum' or ''"></th>
+                                            </tal:column_titles>
+                                        </tr>
+                                    </thead>
+                                    <tal:sums tal:define="sums python:searchviewobj.getColumnSums();"
+                                              tal:condition="python:test(len(sums)>0)"> 
+                                        <tr><th>Total</th>
+                                            <tal:column repeat="column python:searchviewobj.getColumns()">
+                                            <th tal:condition="not: column/HiddenColumn|nothing">
+                                                <tal:sum condition="python:test(column.id in sums)"
+                                                         content="python:sums[column.id]">sum</tal:sum>
+                                            </th>
+                                            </tal:column>
+                                        </tr>
+                                    </tal:sums>
+
+                                    <tbody></tbody>
+                                </table>
+
+                                <p style="clear: both;" class="discreet">
+                                    <a href="?widget=BASIC" i18n:translate="plominoview_viewstatictable">View as static table</a>
+                                </p>
+
+                            </tal:block_view_dynamic_found>
+
+                            <tal:block_view_basic_found condition="python:searchviewobj and searchviewwidget == 'BASIC'">
+
                                 <table 
                                     tal:define="results python:options.get('searchresults');
                                                 columns python:searchviewobj.getColumns()"
@@ -231,8 +316,12 @@
                                         </tr>
                                     </tal:block_result_rows>
                                 </table>
-                            </tal:block_view_found>
+                            </tal:block_view_basic_found>
                         </tal:results>
+
+
+
+
 
                         <tal:block_actionbar_bottom 
                             define="owner python:form"
