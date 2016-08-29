@@ -359,7 +359,7 @@ class PlominoView(ATFolder):
             else:
                 sortindex = self.getIndexKey(sortindex)
 
-        if not reverse:
+        if reverse == None:
             reverse = self.getReverseSorting()
 
         query = dict()
