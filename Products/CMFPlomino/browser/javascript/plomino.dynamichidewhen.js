@@ -23,7 +23,7 @@
     //Hidewhen without ajax call (only for single checkbox option)
     function simpleHidewhen() {
         //$(".hidewhen-" + $(this).attr('data-dhw')).toggle();
-        hw = ".hidewhen-" + $(this).attr('data-dhw')
+        var hw = ".hidewhen-" + $(this).attr('data-dhw')
         $(this).closest('form').find(hw).toggle();
     };
 

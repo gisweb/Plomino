@@ -350,6 +350,7 @@ class PlominoView(ATFolder):
             fulltext_query=None, sortindex=None, reverse=None, request_query=None):
         """ Return a subset of documents that matches the view. """
         index = self.getParentDatabase().getIndex()
+        keycolumn = self.getKeyColumn()
 
         if not sortindex:
             sortindex = self.getSortColumn()
@@ -358,7 +359,7 @@ class PlominoView(ATFolder):
             else:
                 sortindex = self.getIndexKey(sortindex)
 
-        if not reverse:
+        if reverse == None:
             reverse = self.getReverseSorting()
 
         query = dict()
@@ -368,7 +369,11 @@ class PlominoView(ATFolder):
         query.update({'PlominoViewFormula_'+self.getViewName(): True})
 
         if fulltext_query:
-            query['SearchableText'] = fulltext_query
+            if self.getParentDatabase().FulltextIndex:
+                query['SearchableText'] = fulltext_query
+            #you can use the key column instead of SearchableText
+            elif keycolumn:
+                query[self.getIndexKey(keycolumn)] = fulltext_query
 
         results = index.dbsearch(
                 query,
@@ -837,7 +842,11 @@ class PlominoView(ATFolder):
             row = [brain.getPath().split('/')[-1]]
             for column in columns:
                 column_value = getattr(brain, self.getIndexKey(column.id), '')
-                rendered = column.getColumnRender(column_value)
+                if getattr(column, 'RenderField', False):
+                    rendered = column.getColumnRender(column_value)
+                else:
+                    rendered = column_value
+
                 if isinstance(rendered, list):
                     rendered = [asUnicode(e).encode('utf-8').replace('\r', '') for e in rendered]
                 else:

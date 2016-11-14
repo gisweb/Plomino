@@ -86,6 +86,8 @@ except ImportError:
 from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 from zope.event import notify
 from PlominoEvents import PlominoSaveEvent
+from events import PlominoBeforeDocumentSaveEvent, PlominoAfterDocumentSaveEvent
+
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """ These represent the contents in a Plomino database.
@@ -520,6 +522,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     self.REQUEST.RESPONSE.redirect(doc_path)
         
         notify(PlominoSaveEvent(self))
+        notify(PlominoAfterDocumentSaveEvent(self))
+
         
         if refresh_index:
             # update index
