@@ -10,7 +10,7 @@ $(document).ready(function() {
 		header: "h4.plomino-accordion-header", active: false, collapsible: true, autoHeight: false
 	});
 	$("h3.plomino-accordion-header").parent().accordion({
-		header: "h3.plomino-accordion-header", collapsible: true, autoHeight: false
+		header: "h3.plomino-accordion-header", active: false, collapsible: true, heightStyle: "content"
 	});
 	
 	$(".plomino-accordion-header").click(function(e) {
