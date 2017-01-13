@@ -50,7 +50,7 @@ function refreshDynamicContent() {
     });
 }
 jQuery(document).ready( function() {
-    jQuery('form :input').change(refreshDynamicContent);
+    jQuery('form :input[data-dhw=1]').change(refreshDynamicContent);
 });">
     </script>
     <tal:block_hasjsresources 

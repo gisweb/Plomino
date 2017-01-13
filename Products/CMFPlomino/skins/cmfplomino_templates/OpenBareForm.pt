@@ -33,7 +33,7 @@ function refreshDynamicContent() {
     });
 }
 jQuery(document).ready( function() {
-    jQuery('#plomino_form :input').change(refreshDynamicContent);
+    jQuery('#plomino_form :input[data-dhw=1]').change(refreshDynamicContent);
 });
     ">
     </script>

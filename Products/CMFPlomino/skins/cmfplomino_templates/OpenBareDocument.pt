@@ -22,7 +22,7 @@
             $.post('computedynamiccontent', $('#plomino_form').serialize(), onsuccess, 'json');
         }
         $(document).ready( function() {
-            $('form :input').change(refreshDynamicContent);
+            $('form :input[data-dhw=1]').change(refreshDynamicContent);
         });
     </script>
     <tal:block_hasjsresources 
