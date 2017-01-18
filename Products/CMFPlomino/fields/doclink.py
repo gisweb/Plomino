@@ -157,14 +157,17 @@ class DoclinkField(BaseField):
             column_ids = [col.id for col in columns]
 
             datatable = []
-            for b in brains:
-                row = [b.id]
-                for col in column_ids:
-                    v = getattr(b, sourceview.getIndexKey(col))
-                    if not isinstance(v, str):
-                        v = unicode(v).encode('utf-8').replace('\r', '')
-                    row.append(v or '&nbsp;')
-                datatable.append(row)
+            # if selectionlist  filter view on this list of ids
+            ids = [v.split('|')[1] for v in selectionlist]
+            for bs in brains:
+                if (len(selectionlist)==0) or (bs.id in ids):
+                    row = [bs.id]
+                    for col in column_ids:
+                        v = getattr(bs, sourceview.getIndexKey(col))
+                        if not isinstance(v, str):
+                            v = unicode(v).encode('utf-8').replace('\r', '')
+                        row.append(v or '&nbsp;')
+                    datatable.append(row)
         else:
             datatable = [v.split('|')[::-1] for v in selectionlist]
 
