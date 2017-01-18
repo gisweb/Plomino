@@ -1,5 +1,5 @@
 <span tal:define="v options/fieldvalue;
-                  formatted_value python:options['field'].getSettings().format_value(v);
+                  formatted_value python:options['field'].getSettings().format_value(v) or options['field'].getSettings().format_value(0);
                   dynamic python:getattr(options['field'], 'isDynamicField', False);
                   field_id python:options['field'].id"
            tal:content="formatted_value"
