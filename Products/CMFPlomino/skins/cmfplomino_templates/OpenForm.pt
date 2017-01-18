@@ -177,7 +177,7 @@ jQuery(document).ready( function() {
             <tal:block_searchform
                 condition="python:searchform"
                 define="hasReadPermissionOnDatabase python:test(here.hasReadPermission(here.getParentDatabase()));
-                hasReadPermissionOnForm python:test(here.hasReadPermission(here))
+                hasReadPermissionOnForm python:test(here.hasReadPermission(here));
                 hasRemovePermission python:here.hasRemovePermission(here)==True;">
 
                 <form 
@@ -222,7 +222,7 @@ jQuery(document).ready( function() {
                                     searchviewfound python: searchviewobj is not None;
                                     searchviewwidget python: searchviewobj.getWidget() or 'BASIC';
                                     ">
-                                    
+
                             <tal:block_no_view_found
                                 condition="not:searchviewfound">
                                 <span tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
@@ -310,7 +310,7 @@ jQuery(document).ready( function() {
                             </tal:block_view_dynamic_found>
 
 
-                            <tal:block_view_found condition="searchviewfound">
+                            <tal:block_view_found condition="python:searchviewobj and searchviewwidget == 'BASIC'">
                                 <table 
                                     tal:define="results python:options.get('searchresults');
                                                 count python:len(results) if results else 0;
