@@ -829,7 +829,10 @@ class PlominoView(ATFolder):
             row = [brain.getPath().split('/')[-1]]
             for column in columns:
                 column_value = getattr(brain, self.getIndexKey(column.id), '')
-                rendered = column.getColumnRender(column_value)
+                if getattr(column, 'RenderField', False):
+                    rendered = column.getColumnRender(column_value)
+                else:
+                    rendered = column_value                
                 if isinstance(rendered, list):
                     rendered = [asUnicode(e).encode('utf-8').replace('\r', '') for e in rendered]
                 else:
