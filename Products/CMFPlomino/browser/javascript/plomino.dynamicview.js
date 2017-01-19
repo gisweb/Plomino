@@ -10,7 +10,7 @@ function dynamicview_generate_cells_content(display_checkboxes) {
 		var cell = oObj.aData[oObj.iDataColumn];
 		if (oObj.iDataColumn > 0) {
 			if (findInArray(cell, '<a') == -1) {
-				return '<a href="' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
+				return '<a href="../' + oObj.aData[0] + '" class="viewlink">' + cell + '</a>';
 			}
 			else
 				return cell;
