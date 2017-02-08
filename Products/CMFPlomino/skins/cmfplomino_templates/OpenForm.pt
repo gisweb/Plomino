@@ -219,9 +219,30 @@
                                                             'sAjaxSource': '../${searchviewobj/id}/tojson',
                                                             'bServerSide': true,
                                                             ${params},
+                                                            'aoColumnDefs': [
+                                                                { 'aTargets': ['_all'],
+                                                                  'bUseRendered': false,
+                                                                  'fnRender': dynamicview_generate_cells_content($display_checkboxes)
+                                                                },
+                                                                ${fixedcol1size}
+                                                                { 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' }
+                                                            ],
+                                                            ${fixedsorting}
+                                                            'fnDrawCallback': function() {
+                                                                this.fnSetFilteringLimit(1);
+                                                                if (${categorized}) {
+                                                                    dynamicview_categorize('dynamictable');
+                                                                }
+                                                            },
+                                                            // Move to field settings?
+                                                            // 'fnFooterCallback': generateTableFooter,
                                                             'oLanguage': {
                                                                 'sUrl': '@@collective.js.datatables.translation'
                                                             }
+                                                        });
+                                                        var tableNodes = oDynamicTable.fnGetNodes();
+                                                        jQuery('td > input:checkbox', tableNodes).change(function() {
+                                                            jQuery(this).closest('tr').toggleClass('row_selected');
                                                         });
                                                     });">
                                 </script>
@@ -257,7 +278,6 @@
                                 </p>
 
                             </tal:block_view_dynamic_found>
-
                             <tal:block_view_basic_found condition="python:searchviewobj and searchviewwidget == 'BASIC'">
 
                                 <table 
