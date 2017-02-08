@@ -219,23 +219,6 @@
                                                             'sAjaxSource': '../${searchviewobj/id}/tojson',
                                                             'bServerSide': true,
                                                             ${params},
-                                                            'aoColumnDefs': [
-                                                                { 'aTargets': ['_all'],
-                                                                  'bUseRendered': false,
-                                                                  'fnRender': dynamicview_generate_cells_content($display_checkboxes)
-                                                                },
-                                                                ${fixedcol1size}
-                                                                { 'aTargets': [0], 'bSearchable': false, 'bSortable': false, 'sWidth': '0' }
-                                                            ],
-                                                            ${fixedsorting}
-                                                            'fnDrawCallback': function() {
-                                                                this.fnSetFilteringLimit(1);
-                                                                if (${categorized}) {
-                                                                    dynamicview_categorize('dynamictable');
-                                                                }
-                                                            },
-                                                            // Move to field settings?
-                                                            // 'fnFooterCallback': generateTableFooter,
                                                             'oLanguage': {
                                                                 'sUrl': '@@collective.js.datatables.translation'
                                                             }
