@@ -155,6 +155,18 @@ returns the current Plomino document."""),
         ),
         schemata="Sorting",
     ),
+    BooleanField(
+        name='PositionIndex',
+        default="0",
+        widget=BooleanField._properties['widget'](
+            label="Position Index",
+            description="Position Index",
+            label_msgid=_('CMFPlomino_label_PositionIndex', default="Posizione al posto di id"),
+            description_msgid=_('CMFPlomino_help_PositionIndex', default="Posizione al posto di id"),
+            i18n_domain='CMFPlomino',
+        ),
+        schemata="Sorting",
+    ),
     StringField(
         name='ActionBarPosition',
         default="TOP",
@@ -794,6 +806,7 @@ class PlominoView(ATFolder):
         """
         data = []
         categorized = self.getCategorized()
+        positionIndex = self.getPositionIndex()
         start = 1
         limit = -1
         search = None
@@ -838,8 +851,14 @@ class PlominoView(ATFolder):
         total = display_total = len(results)
         columns = [column for column in self.getColumns()
                 if not getattr(column, 'HiddenColumn', False)]
+        count = 0
         for brain in results:
-            row = [brain.getPath().split('/')[-1]]
+            if positionIndex:
+                count = count + 1
+                row=[count + start]
+            else: 
+                row = [brain.getPath().split('/')[-1]]
+
             for column in columns:
                 column_value = getattr(brain, self.getIndexKey(column.id), '')
                 if getattr(column, 'RenderField', False):
