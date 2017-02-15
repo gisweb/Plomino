@@ -32,6 +32,7 @@
                         name form/id;
                         action string:${form/absolute_url}/createDocument;
                         method form_method;
+                        class string:plomino_form;
                         enctype enctype|nothing
                         "
                 id="plomino_form">
