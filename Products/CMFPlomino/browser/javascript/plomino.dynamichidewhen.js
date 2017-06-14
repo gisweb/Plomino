@@ -13,7 +13,7 @@
         var baseUrl = act.substring(0,act.lastIndexOf('/'))
         $.ajax({
             type: 'POST',
-            url: baseUrl + '/computehidewhens',
+            url: baseUrl + '/computehidewhens' + window.location.search,
             data: $(this).closest('form').serialize(),
             success: onsuccess,
             dataType: 'json' 
