@@ -10,10 +10,19 @@
             }
         }
         var act = $(this).closest('form').attr("action");
-        var baseUrl = act.substring(0,act.lastIndexOf('/'))
+        var baseUrl = act.substring(0,act.lastIndexOf('/'));
+        //recupero htmlattribute dal primo elemento
+        var el = $("[name='" + $(this).attr("name") + "']").first();
+        var targetForm = el.attr('data-dhw');
+        var params;
+        if (targetForm == '1')
+            params = window.location.search
+        else
+            params = '?openwithform=' + targetForm
+
         $.ajax({
             type: 'POST',
-            url: baseUrl + '/computehidewhens' + window.location.search,
+            url: baseUrl + '/computehidewhens' + params,
             data: $(this).closest('form').serialize(),
             success: onsuccess,
             dataType: 'json' 
@@ -29,11 +38,11 @@
 
     function toggleHidewhen(container){
         var elementName;
-        $(container).find("input:checkbox[data-dhw = 1],input:radio[data-dhw = 1]").each(function(_,el){
+        $(container).find("input:checkbox[data-dhw],input:radio[data-dhw]").each(function(_,el){
             elementName = $(el).attr("name");
             $(container).find("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
         })
-        $(container).find("input:text[data-dhw = 1],select[data-dhw = 1]").on("change",refreshHidewhen);
+        $(container).find("input:text[data-dhw],select[data-dhw = 1]").on("change",refreshHidewhen);
         $(container).find("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
     }
 
