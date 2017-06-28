@@ -85,7 +85,6 @@ except ImportError:
     URL_NORMALIZER = False
 from plone.indexer.interfaces import IIndexableObjectWrapper, IIndexableObject
 from zope.event import notify
-from PlominoEvents import PlominoSaveEvent
 from events import PlominoBeforeDocumentSaveEvent, PlominoAfterDocumentSaveEvent
 
 
