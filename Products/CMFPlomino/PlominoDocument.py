@@ -521,7 +521,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
         
-        notify(PlominoSaveEvent(self))
         notify(PlominoAfterDocumentSaveEvent(self))
 
         
