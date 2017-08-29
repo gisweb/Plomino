@@ -140,6 +140,7 @@ if (typeof(oDynamicTable)!="undefined") {
 </div>
 
 <tal:block metal:define-macro="LinkAction"> <a
+	class="plomino-action-link"
 	tal:attributes="href python:plominoaction.executeAction(plominotarget, plomino_parent_id)"
 	tal:content="python: plominoaction.Title()" /></tal:block>
 
