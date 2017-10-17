@@ -181,10 +181,11 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         if only_allowed:
             user_groups_roles = ['Anonymous', '*']
-            user_id = self.getCurrentMember().getUserName()
-            if user_id != "Anonymous User":
+            user_id = self.getCurrentMember().getId()
+            user_name = self.getCurrentMember().getUserName()
+            if user_name != "Anonymous User":
                 user_groups_roles += (
-                        [user_id] + 
+                        [user_id,user_name] + 
                         self.getCurrentUserGroups() + 
                         self.getCurrentUserRoles())
             request['getPlominoReaders'] = user_groups_roles
