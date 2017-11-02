@@ -29,7 +29,8 @@
 				display form actions
 			</span><br/>
 		</tal:block>
-	    <span tal:content="structure python:here.openWithForm(myF)" />
+	  <tal:frm_render tal:content="structure python:here.openBlankForm(request)">
+    </tal:frm_render> 
 
 		<tal:block
 			tal:define="owner python:myF"
