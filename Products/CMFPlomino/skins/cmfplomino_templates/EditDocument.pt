@@ -21,16 +21,6 @@
         hasGoogleVisualizationField python:form.hasGoogleVisualizationField()
         ">
     <tal:has_form condition="has_form">
-        <tal:has_date condition="hasDateTimeField">
-            <script type="text/javascript"
-                    charset="iso-8859-1"
-                    tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
-            </script>
-            <script type="text/javascript"
-                    charset="iso-8859-1"
-                    tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
-          </script>
-        </tal:has_date>
         <tal:has_googleviz condition="hasGoogleVisualizationField">
             <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
         </tal:has_googleviz>
@@ -41,7 +31,6 @@
             tal:repeat="js jsresources">
             <script
                 type="text/javascript"
-                charset="iso-8859-1"
                 tal:attributes="src js">
             </script>
         </tal:block_hasjsresources>

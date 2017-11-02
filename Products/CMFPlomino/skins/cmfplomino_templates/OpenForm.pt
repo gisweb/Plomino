@@ -7,18 +7,6 @@
 <body>
 
 <metal:javascript_head fill-slot="javascript_head_slot">
-    <tal:block_hasdatetimefield condition="python:here.hasDateTimeField()">
-        <script
-            type="text/javascript"
-            charset="iso-8859-1"
-            tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
-        </script>
-        <script 
-            type="text/javascript"
-            charset="iso-8859-1"
-            tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
-        </script>
-    </tal:block_hasdatetimefield>
     <tal:block_hasgooglevisualizationfield tal:condition="python:here.hasGoogleVisualizationField()">
         <tal:script metal:use-macro="here/googlevisualization_macro/macros/js_library">//load google js</tal:script>
     </tal:block_hasgooglevisualizationfield>
@@ -134,7 +122,8 @@
                                 name="plominoredirecturl"
                                 tal:attributes="value here/REQUEST/plominoredirecturl|nothing" />
                         </tal:redirecturl>
-                        <span tal:content="structure python:here.openBlankForm(request)" /> 
+                        <tal:frm_render tal:content="structure python:here.openBlankForm(request)">
+                        </tal:frm_render> 
                         <tal:block_actionbar_bottom
                             define="owner python:form"
                             condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
