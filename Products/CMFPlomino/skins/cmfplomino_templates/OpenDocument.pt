@@ -79,7 +79,7 @@
 
 			    <div tal:replace="structure provider:plone.abovecontentbody" />
 			
-			    <div id="renderedForm" tal:content="structure python:here.openWithForm(myF)" />
+			    <div id="renderedForm" tal:replace="structure python:here.openWithForm(myF)" />
 
 				<tal:block
 					tal:define="owner python:myF"

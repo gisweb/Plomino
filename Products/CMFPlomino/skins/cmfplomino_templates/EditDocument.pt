@@ -111,7 +111,7 @@
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
-                <span tal:content="structure python:here.editWithForm(form)" />
+                <div tal:replace="structure python:here.editWithForm(form)" />
 
                 <tal:form_actions_bottom
                     define="owner python:form"

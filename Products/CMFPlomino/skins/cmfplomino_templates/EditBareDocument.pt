@@ -44,7 +44,7 @@
 				</span><br/>
 		</tal:form_actions_top>
 		
-	    <span tal:content="structure python:here.editWithForm(form)" />
+	   <div tal:replace="structure python:here.editWithForm(form)" />
 
 		<tal:form_actions_bottom
 			define="owner python:form">
