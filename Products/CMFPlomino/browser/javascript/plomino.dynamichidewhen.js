@@ -42,7 +42,7 @@
             elementName = $(el).attr("name");
             $(container).find("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
         })
-        $(container).find("input:text[data-dhw],select[data-dhw = 1]").on("change",refreshHidewhen);
+        $(container).find("input:text[data-dhw],select[data-dhw]").on("change",refreshHidewhen);
         $(container).find("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
     }
 
