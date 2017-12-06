@@ -632,8 +632,15 @@ class PlominoView(ATFolder):
                 logging.exception('Bad quoting: %s'%quoting, exc_info=True)
                 quoting = csv.QUOTE_NONNUMERIC
 
+
+        if not REQUEST is None and 'request_query' in REQUEST:
+            # query parameter in REQUEST is supposed to be a json object
+            request_query = self.__query_loads__(REQUEST['request_query'])
+        else:
+            request_query = None
+
         if brain_docs is None:
-            brain_docs = self.getAllDocuments(getObject=False)
+            brain_docs = self.getAllDocuments(getObject=False, request_query=request_query)
 
         columns = [c for c in self.getColumns()
             if not getattr(c, 'HiddenColumn', False)]
@@ -702,8 +709,15 @@ class PlominoView(ATFolder):
             if REQUEST.get("displayColumnsTitle"):
                 displayColumnsTitle = REQUEST.get("displayColumnsTitle")
 
+
+        if not REQUEST is None and 'request_query' in REQUEST:
+            # query parameter in REQUEST is supposed to be a json object
+            request_query = self.__query_loads__(REQUEST['request_query'])
+        else:
+            request_query = None
+
         if brain_docs is None:
-            brain_docs = self.getAllDocuments(getObject=False)
+            brain_docs = self.getAllDocuments(getObject=False, request_query=request_query)
 
         columns = [c for c in self.getColumns()
             if not getattr(c, 'HiddenColumn', False)]
@@ -939,7 +953,6 @@ class PlominoView(ATFolder):
         else:
             return results, total
 
-    
     security.declarePublic('search_json')
     def search_json(self, REQUEST=None):
         """ Returns a JSON representation of view filtered data
