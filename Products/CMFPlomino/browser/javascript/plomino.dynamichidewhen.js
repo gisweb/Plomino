@@ -13,12 +13,12 @@
         var baseUrl = act.substring(0,act.lastIndexOf('/'));
         //recupero htmlattribute dal primo elemento
         var el = $("[name='" + $(this).attr("name") + "']").first();
-        var targetForm = el.attr('data-dhw');
+        var targetForm = el.data('dhw');
         var params;
-        if (targetForm == '1')
-            params = window.location.search
+        if (targetForm == '1'||targetForm == 1)
+            params = window.location.search;
         else
-            params = '?openwithform=' + targetForm
+            params = '?openwithform=' + targetForm;
 
         $.ajax({
             type: 'POST',
