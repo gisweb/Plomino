@@ -45,7 +45,6 @@ from Products.CMFPlomino.PlominoUtils import PlominoTranslate
 from Products.CMFPlomino.PlominoUtils import translate
 
 
-
 import interfaces
 
 schema = Schema((
@@ -871,46 +870,23 @@ class PlominoForm(ATFolder):
 
         return False
 
+
     security.declareProtected(READ_PERMISSION, 'getHidewhenAsJSON')
     def getHidewhenAsJSON(self, REQUEST, parent_form=None, doc=None, validation_mode=False):
         """ Return a JSON object to dynamically show or hide hidewhens
         (works only with isDynamicHidewhen)
         """
-        db = self.getParentDatabase()
         result = {}
-        target = getTemporaryDocument(
-                db,
-                parent_form or self,
+        if self.hasDynamicHidewhen():
+            result = self.getHidewhen(
                 REQUEST,
-                doc,
-                validation_mode=validation_mode).__of__(db)
-        for hidewhen in self.getHidewhenFormulas():
-            if getattr(hidewhen, 'isDynamicHidewhen', False):
-                try:
-                    isHidden = self.runFormulaScript(
-                            SCRIPT_ID_DELIMITER.join(['hidewhen', self.id, hidewhen.id, 'formula']),
-                            target,
-                            hidewhen.Formula)
-                except PlominoScriptException, e:
-                    e.reportError(
-                            '%s hide-when formula failed' % hidewhen.id)
-                    #if error, we hide anyway
-                    isHidden = True
-                result[hidewhen.id] = isHidden
-        for subformname in self.getSubforms(doc=target):
-            form = db.getForm(subformname)
-            if not form:
-                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
-                self.writeMessageOnPage(msg, self.REQUEST)
-                logger.info(msg)
-                continue
-            form_hidewhens = json.loads(
-                    form.getHidewhenAsJSON(REQUEST,
-                        parent_form=parent_form or self, doc=target,
-                        validation_mode=validation_mode))
-            result.update(form_hidewhens)
+                parent_form=parent_form,
+                doc=doc,
+                validation_mode=validation_mode,
+            )
 
         return json.dumps(result)
+
 
     security.declareProtected(READ_PERMISSION, 'applyCache')
     def applyCache(self, html_content, doc=None):
@@ -1285,16 +1261,17 @@ class PlominoForm(ATFolder):
             return self.errors_json(
                     errors=json.dumps({'success': True}))
 
+    security.declarePrivate('_get_js_hidden_subforms_fields')
+    def _get_js_hidden_subforms_fields(self, REQUEST, doc, validation_mode=False):
 
-    security.declarePrivate('_get_js_hidden_fields')
-    def _get_js_hidden_fields(self, REQUEST, doc, validation_mode=False):
-        hidden_fields = []
-        hidewhens = json.loads(
-                self.getHidewhenAsJSON(REQUEST, doc=doc,
-                    validation_mode=validation_mode))
+
+        hidden_forms_fields = {"forms":[],"fields":[]}
+        hidewhens = self.getHidewhen(REQUEST, doc=doc,
+                    validation_mode=validation_mode)
+
         html_content = self._get_html_content()
         for hidewhenName, doit in hidewhens.items():
-            if not doit:  # Only consider True hidewhens
+            if not doit: # Only consider True hidewhens
                 continue
             start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                     hidewhenName)
@@ -1303,9 +1280,13 @@ class PlominoForm(ATFolder):
             for hiddensection in re.findall(
                     start + '(.*?)' + end,
                     html_content):
-                hidden_fields += re.findall(
+                hidden_forms_fields["forms"] += re.findall(
+                    '<span class="plominoSubformClass">([^<]+)</span>',
+                    hiddensection)
+                hidden_forms_fields["fields"] += re.findall(
                     '<span class="plominoFieldClass">([^<]+)</span>',
                     hiddensection)
+
         for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if not subform:
@@ -1313,8 +1294,12 @@ class PlominoForm(ATFolder):
                 self.writeMessageOnPage(msg, self.REQUEST)
                 logger.info(msg)
                 continue
-            hidden_fields += subform._get_js_hidden_fields(REQUEST, doc)
-        return hidden_fields
+            result = subform._get_js_hidden_subforms_fields(REQUEST, doc, validation_mode=validation_mode)
+            hidden_forms_fields["forms"] += result["forms"]
+            hidden_forms_fields["fields"] += result["fields"]
+
+        return hidden_forms_fields
+
 
     security.declareProtected(READ_PERMISSION,'getHidewhen')
     def getHidewhen(self,REQUEST,parent_form=None, doc=None,validation_mode=False):
@@ -1326,6 +1311,12 @@ class PlominoForm(ATFolder):
             parent_form = self
 
         db = parent_form.getParentDatabase()
+
+        if REQUEST.get('openwithform'):
+            parent_form=db.getForm(REQUEST.get('openwithform'))
+
+        #logger.info(parent_form)
+
         result = {}
         target = getTemporaryDocument(
                 db,
@@ -1335,7 +1326,7 @@ class PlominoForm(ATFolder):
                 validation_mode=validation_mode)
 
         hidewhens =  parent_form.getHidewhenFormulas()
-        for subformname in self.getSubforms(doc=target):
+        for subformname in parent_form.getSubforms(doc=target):
             form = db.getForm(subformname)
             if not form:
                 msg = 'Missing subform: %s. Referenced on: %s' % (subformname, parent_form.id)
@@ -1366,41 +1357,14 @@ class PlominoForm(ATFolder):
         return result
 
 
-
-
-    security.declarePrivate('_get_js_hidden_subforms')
-    def _get_js_hidden_subforms(self, REQUEST, doc, validation_mode=False):
-        hidden_forms = []
-        hidewhens = self.getHidewhen(REQUEST, doc=doc,
-                    validation_mode=validation_mode)
-        html_content = self._get_html_content()
-        for hidewhenName, doit in hidewhens.items():
-            if not doit: # Only consider True hidewhens
-                continue
-            start = ('<span class="plominoHidewhenClass">start:%s</span>' %
-                    hidewhenName)
-            end = ('<span class="plominoHidewhenClass">end:%s</span>' %
-                    hidewhenName)
-            for hiddensection in re.findall(
-                    start + '(.*?)' + end,
-                    html_content):
-                hidden_forms += re.findall(
-                    '<span class="plominoSubformClass">([^<]+)</span>',
-                    hiddensection)
-        for subformname in self.getSubforms(doc):
-            subform = self.getParentDatabase().getForm(subformname)
-            if not subform:
-                msg = 'Missing subform: %s. Referenced on: %s' % (subformname, self.id)
-                self.writeMessageOnPage(msg, self.REQUEST)
-                logger.info(msg)
-                continue
-            hidden_forms += subform._get_js_hidden_subforms(REQUEST, doc)
-        return hidden_forms
-
-
     security.declarePublic('validateInputs')
     def validateInputs(self, REQUEST, doc=None):
         " " 
+        #metodo attivo solo per il post di salvataggio e validazione errori DA RIVEDERE SE ESISTE UN MODO PIU FURBO
+        command = self.REQUEST.URL.split('/')[-1].lower()
+        if command not in ['savedocument','validation_errors']:
+            return []
+
         db = self.getParentDatabase()
         tmp = getTemporaryDocument(
                 db,
@@ -1416,17 +1380,15 @@ class PlominoForm(ATFolder):
                 applyhidewhen=True,
                 validation_mode=True,
                 request=REQUEST)
-        hidden_fields = self._get_js_hidden_fields(
+        hidden_forms_fields = self._get_js_hidden_subforms_fields(
                 REQUEST,
                 # doc,
                 tmp,
                 validation_mode=True)
 
-        hidden_forms = self._get_js_hidden_subforms(
-                REQUEST,
-                # doc,
-                tmp,
-                validation_mode=True)
+        hidden_fields = hidden_forms_fields["fields"]
+        hidden_forms = hidden_forms_fields["forms"]
+
         for form_id in hidden_forms:
             form = db.getForm(form_id)
             for field in form.getFormFields():
