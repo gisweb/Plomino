@@ -26,6 +26,8 @@ from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
+from plone import api
+
 
 # Plomino
 from Products.CMFPlomino.config import *
@@ -188,14 +190,17 @@ class PlominoAccessControl(Persistent):
     def getCurrentMember(self):
         """ Returns the current member.
         """
-        membershiptool = getToolByName(self, 'portal_membership')
+        membershiptool = api.portal.get().portal_membership
         return membershiptool.getAuthenticatedMember()
 
     security.declarePublic('getCurrentUserId')
     def getCurrentUserId(self):
         """ Returns the current user id.
         """
-        return self.getCurrentMember().getUserName()
+        user_id = 'Anonymous'
+        if not api.user.is_anonymous():
+            user_id = self.getCurrentMember().getId()
+        return user_id
 
     security.declarePublic('getCurrentUserGroups')
     def getCurrentUserGroups(self):
@@ -210,6 +215,9 @@ class PlominoAccessControl(Persistent):
         """
         try:
             userid = self.getCurrentUserId()
+            if userid == 'Anonymous':
+                return [getattr(self, "AnomynousAccessRight", "NoAccess")]
+
             rights = self.get_local_roles_for_userid(userid)
 
             # we append group rights
@@ -221,7 +229,10 @@ class PlominoAccessControl(Persistent):
             if not rights:
                 # still no specific rights, so return the rights configured
                 # as AuthenticatedAccessRight
-                default_right = getattr(self, "AuthenticatedAccessRight", "NoAccess")
+                default_right = getattr(
+                    self,
+                    "AuthenticatedAccessRight",
+                    "NoAccess")
                 rights = [default_right]
             return rights
         except Exception, e:
@@ -246,11 +257,12 @@ class PlominoAccessControl(Persistent):
     def getCurrentUserRoles(self):
         """ Get current user roles
         """
-        userid = self.getCurrentMember().getUserName()
+        user_id = self.getCurrentMember().getId()
+        # 'Anonymous User' will have zero/empty user roles
         allroles = self.getUserRoles()
         roles = []
         for r in allroles:
-            if self.hasUserRole(userid, r):
+            if self.hasUserRole(user_id, r):
                 roles.append(r)
         return roles
 
@@ -262,20 +274,20 @@ class PlominoAccessControl(Persistent):
         If Plomino_Readers is defined on the doc, is he part of it?
         """
         isreader = False
-        if self.checkUserPermission(READ_PERMISSION, doc):
+        if self.checkUserPermission(config.READ_PERMISSION, doc):
             allowed_readers = set(doc.getPlominoReaders())
-            if ('*' in allowed_readers or 
-                    self.checkUserPermission(ACL_PERMISSION)):
+            if ('*' in allowed_readers or
+                    self.checkUserPermission(config.ACL_PERMISSION)):
                 isreader = True
             else:
-                username = self.getCurrentMember().getUserName()
-                if username == "Anonymous User":
+                user_id = self.getCurrentMember().getId()
+                if api.user.is_anonymous():
                     user_groups_roles = set(['Anonymous'])
                 else:
                     user_groups_roles = set(
-                            ['Anonymous', username] +
-                            self.getCurrentUserGroups() +
-                            self.getCurrentUserRoles())
+                        ['Anonymous', user_id] +
+                        self.getCurrentUserGroups() +
+                        self.getCurrentUserRoles())
                 if allowed_readers.intersection(user_groups_roles):
                     isreader = True
         return isreader
@@ -283,7 +295,6 @@ class PlominoAccessControl(Persistent):
     security.declarePublic('isCurrentUserAuthor')
     def isCurrentUserAuthor(self, doc):
         """ Does the current user have the author role on doc?
-
         This is True if:
         - they have the Owner or Manager Plone roles, OR
         - if they have the PlominoDesigner, PlominoEditor or PlominoManager
@@ -294,15 +305,16 @@ class PlominoAccessControl(Persistent):
           - they belong to a *group* which is in the Plomino_Authors item.
         """
         # the user must at least have edit permission
-        if not self.checkUserPermission(EDIT_PERMISSION):
+        if not self.checkUserPermission(config.EDIT_PERMISSION):
             return False
 
         # the user must at least be an allowed reader
         if not self.isCurrentUserReader(doc):
             return False
 
-        # if the user is Owner or Manager, no problem
-        general_plone_rights = self.getCurrentMember().getRolesInContext(doc)
+        # if the user is Owner of the db or Manager, no problem
+        general_plone_rights = self.getCurrentMember().getRolesInContext(
+            doc.getParentDatabase())
         for r in ['Owner', 'Manager']:
             if r in general_plone_rights:
                 return True
@@ -324,7 +336,9 @@ class PlominoAccessControl(Persistent):
             if '*' in authors:
                 return True
 
-            name = self.getCurrentMember().getUserName()
+            name = 'Anonymous'
+            if not api.user.is_anonymous():
+                name = self.getCurrentMember().getId()
             if name in authors:
                 return True
 
@@ -546,7 +560,7 @@ class PlominoAccessControl(Persistent):
     def getPortalMembers(self):
         """ Return all members
         """
-        membershiptool = getToolByName(self, 'portal_membership')
+        membershiptool = api.portal.get().portal_membership
         return membershiptool.searchForMembers(sort_by='userid')
 
     security.declarePublic('getPortalMembersIds')
@@ -559,9 +573,9 @@ class PlominoAccessControl(Persistent):
     def getPortalGroups(self):
         """ Return all groups
         """
-        groupstool = getToolByName(self, 'portal_groups')
+        groupstool = api.portal.get().portal_groups
         return groupstool.listGroups()
-
+        
     security.declarePublic('getPortalMembersGroupsIds')
     def getPortalMembersGroupsIds(self):
         """ Return all member and group ids
