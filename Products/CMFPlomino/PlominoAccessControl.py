@@ -274,10 +274,10 @@ class PlominoAccessControl(Persistent):
         If Plomino_Readers is defined on the doc, is he part of it?
         """
         isreader = False
-        if self.checkUserPermission(config.READ_PERMISSION, doc):
+        if self.checkUserPermission(READ_PERMISSION, doc):
             allowed_readers = set(doc.getPlominoReaders())
             if ('*' in allowed_readers or
-                    self.checkUserPermission(config.ACL_PERMISSION)):
+                    self.checkUserPermission(ACL_PERMISSION)):
                 isreader = True
             else:
                 user_id = self.getCurrentMember().getId()
@@ -305,7 +305,7 @@ class PlominoAccessControl(Persistent):
           - they belong to a *group* which is in the Plomino_Authors item.
         """
         # the user must at least have edit permission
-        if not self.checkUserPermission(config.EDIT_PERMISSION):
+        if not self.checkUserPermission(EDIT_PERMISSION):
             return False
 
         # the user must at least be an allowed reader
