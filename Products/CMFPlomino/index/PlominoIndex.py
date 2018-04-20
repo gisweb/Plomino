@@ -181,13 +181,20 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         if only_allowed:
             user_groups_roles = ['Anonymous', '*']
+            # when me is < SpecialUser 'Anonymous User' >
+            # then me.id is 'acl_users'
+            # then me.getId() is None
+            # then self.getCurrentUserId() is 'Anonymous User'
+            # when the site is using email as login name
+            # then getUserName() and getCurrentUserId() will return email
+            # instead of id
+            # There is possible username is 'Anonymous'
             user_id = self.getCurrentMember().getId()
-            user_name = self.getCurrentMember().getUserName()
-            if user_name != "Anonymous User":
+            if not getToolByName(self, 'portal_membership').isAnonymousUser():
                 user_groups_roles += (
-                        [user_id,user_name] + 
-                        self.getCurrentUserGroups() + 
-                        self.getCurrentUserRoles())
+                    [user_id] +
+                    self.getCurrentUserGroups() +
+                    self.getCurrentUserRoles())
             request['getPlominoReaders'] = user_groups_roles
         try:
             results = self.search(request, sortindex, reverse, limit)
@@ -196,10 +203,10 @@ class PlominoIndex(UniqueObject, CatalogTool):
             # AttributeError about 'documentToKeyMap'
             if hasattr(self, 'REQUEST'):
                 self.writeMessageOnPage(
-                        "The %s index does not allow sorting" % sortindex,
-                        self.REQUEST,
-                        error=True)
-            results = self.search(request, None, reverse, limit)                
+                    "The %s index does not allow sorting" % sortindex,
+                    self.REQUEST,
+                    error=True)
+            results = self.search(request, None, reverse, limit)
         return results
 
     security.declareProtected(READ_PERMISSION, 'getKeyUniqueValues')
