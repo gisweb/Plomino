@@ -40,7 +40,7 @@
                     <th tal:repeat="label column_labels" tal:content="label">column title</th>
                 </tr>
             </thead>
-            <tr tal:define="nbcol python:len(column_labels);" tal:condition="python:len(rows)==0"><td tal:attributes="colspan string:${nbcol}" style="text-align:center">No data</td></tr>
+            <tr tal:define="nbcol python:len(column_labels);" tal:condition="python:len(rows)==0"><td tal:attributes="colspan string:${nbcol}" style="text-align:center">Nessun dato</td></tr>
             <tr tal:repeat="row rows">
                 <td tal:repeat="cell row" 
                     tal:content="structure cell">cell content</td>
