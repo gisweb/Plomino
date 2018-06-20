@@ -178,6 +178,9 @@
                         condition="python:test(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
 
                         <span tal:content="structure python:here.formLayout(request)" /> 
+
+                        <tal:search_view tal:condition="python:here.getSearchView()">
+
                         <tal:results
                             define="searchviewname python:here.getSearchView();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
@@ -290,7 +293,7 @@
                             </tal:block_view_basic_found>
                         </tal:results>
 
-
+                        </tal:search_view>
 
 
 
