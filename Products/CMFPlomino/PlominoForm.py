@@ -1361,10 +1361,10 @@ class PlominoForm(ATFolder):
     def validateInputs(self, REQUEST, doc=None):
         " " 
         #metodo attivo solo per il post di salvataggio e validazione errori DA RIVEDERE SE ESISTE UN MODO PIU FURBO
-        command = self.REQUEST.URL.split('/')[-1].lower()
-        if command not in ['savedocument','validation_errors']:
-            return []
-
+        #command = self.REQUEST.URL.split('/')[-1].lower()
+        #if command not in ['savedocument','validation_errors']:
+        #    return []
+        #import pdb;pdb.set_trace()
         db = self.getParentDatabase()
         tmp = getTemporaryDocument(
                 db,
