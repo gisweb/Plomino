@@ -131,10 +131,11 @@ class DoclinkField(BaseField):
         proper = []
         for v in s:
             l = v.split('|')
-            if len(l) == 2:
-                proper.append(v)
-            else:
+            if len(l) == 1:
                 proper.append(v+'|'+v)
+            else :
+                proper.append(v)
+
         return proper
 
     def processInput(self, submittedValue):
