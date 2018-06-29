@@ -642,8 +642,7 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False, request_query=request_query)
 
-        columns = [c for c in self.getColumns()
-            if not getattr(c, 'HiddenColumn', False)]
+        columns = [c for c in self.getColumns()]
 
         stream = cStringIO.StringIO()
         writer = csv.writer(stream,
@@ -719,8 +718,7 @@ class PlominoView(ATFolder):
         if brain_docs is None:
             brain_docs = self.getAllDocuments(getObject=False, request_query=request_query)
 
-        columns = [c for c in self.getColumns()
-            if not getattr(c, 'HiddenColumn', False)]
+        columns = [c for c in self.getColumns()]
 
         rows = self.makeArray(brain_docs, columns)
 
