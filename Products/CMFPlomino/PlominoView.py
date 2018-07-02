@@ -610,7 +610,7 @@ class PlominoView(ATFolder):
     def exportCSV(self,
             REQUEST=None,
             displayColumnsTitle='False',
-            separator="\t",
+            separator=";",
             brain_docs=None,
             quotechar='"',
             quoting=csv.QUOTE_NONNUMERIC):
