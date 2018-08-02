@@ -307,6 +307,66 @@ class DatagridField(BaseField):
 
         return {'rawdata': rawValue, 'rendered': fieldValue}
 
+    def toRepeatingFieldId(self, fieldid):
+        parent_fieldname = self.context.id
+        return "%s.%s:records" % (parent_fieldname, fieldid)
+
+    def toSubforms(self, fieldValue, doc, editmode=True):
+
+
+        if isinstance(fieldValue, dict):
+            fieldValue = fieldValue['rawdata']
+        child_form_id = self.associated_form
+        if not child_form_id:
+            return
+
+        db = self.context.getParentDatabase()
+        child_form = db.getForm(child_form_id)
+        parent_fieldname = self.context.id
+
+        # item names is set by `PlominoForm.createDocument`
+        item_names = doc.getItem(self.context.id+'_itemnames')
+
+        if not item_names:
+            if self.field_mapping:
+                mapped_fields = [
+                    f.strip() for f in self.field_mapping.split(',')]
+            item_names = mapped_fields
+
+        mapped = []
+        for row in fieldValue:
+            if len(row) < len(item_names):
+                row = (row + ['']*(len(item_names)-len(row)))
+            row = dict(zip(item_names, row))
+            mapped.append(row)
+        fieldValue = mapped
+
+        for row in fieldValue:
+            row['Form'] = child_form_id
+            row['Plomino_Parent_Document'] = doc.id
+            # We want a new TemporaryDocument for every row
+            tmp = TemporaryDocument(
+                    db, child_form, row, real_doc=doc)
+            tmp = tmp.__of__(db)
+
+            html = child_form.displayDocument(doc=tmp,
+                  editmode=editmode,
+                  creation=False, #TODO should come from mode?
+                  parent_form_id=self.context.getForm().id,
+                  request=None)
+            yield html
+        if not editmode:
+            return
+        # handle max_repeats
+        for i in range(len(fieldValue), self.max_repeats):
+            html = child_form.displayDocument(doc=None,
+                  editmode=editmode,
+                  creation=True,
+                  parent_form_id=self.context.getForm().id,
+                  request=None)
+            yield html
+
+
 component.provideUtility(DatagridField, IPlominoField, 'DATAGRID')
 
 for f in getFields(IDatagridField).values():
