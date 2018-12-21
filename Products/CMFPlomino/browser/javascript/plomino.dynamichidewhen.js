@@ -2,7 +2,7 @@
     "use strict";
 
     function refreshHidewhen() {
-        var $element = $(this)
+        var $element = $(this);
         var onsuccess = function(data, textStatus, xhr) {
             for (var hw in data){
                 var $hw = $element.closest('form').find('.hidewhen-' + hw)
@@ -40,7 +40,12 @@
         var elementName;
         $(container).find("input:checkbox[data-dhw],input:radio[data-dhw]").each(function(_,el){
             elementName = $(el).attr("name");
-            $(container).find("input:checkbox[name = '" + elementName + "'],input:radio[name = '" + elementName + "']").on("change",refreshHidewhen);
+            $(container).find("input:checkbox[name = '" + elementName + "']").on("change",refreshHidewhen);
+            $(container).find("input:radio[name = '" + elementName + "']").on("change",function(e){
+                if ($(this).is(":checked")){
+                    refreshHidewhen.apply(this);
+                }
+            });
         })
         $(container).find("input:text[data-dhw],select[data-dhw]").on("change",refreshHidewhen);
         $(container).find("input:checkbox[data-dhw]").not("[data-dhw = 1]").on("change",simpleHidewhen);
