@@ -77,7 +77,7 @@ class NameField(BaseField):
                     self.restricttogroup)
             if group:
                 names_ids = [
-                        (m.getProperty("fullname"), m.getProperty('id'))
+                        (m.getProperty("fullname") or m.getProperty("title") or m.getProperty('id'), m.getProperty('id'))
                         for m in group.getGroupMembers()]
             else:
                 return []
@@ -85,7 +85,7 @@ class NameField(BaseField):
             return None
         else:
             names_ids = [
-                    (m.getProperty("fullname"), m.getId())
+                    (m.getProperty("fullname") or m.getProperty("title") or m.getProperty('id'), m.getId())
                     for m in self.context.getPortalMembers()]
 
         names_ids.sort(key=lambda (username, userid): username.lower())
@@ -112,14 +112,19 @@ class NameField(BaseField):
         mt = getToolByName(self.context, 'portal_membership')
         user = mt.getMemberById(userid)
         if user:
-            fullname = user.getProperty('fullname')
+            fullname = user.getProperty('fullname') or user.getProperty("title")
             if fullname:
                 return fullname
             else:
                 return userid
         else:
-            logger.debug("Looking up full name for nonexistent member.")
-            return userid
+            group = self.context.portal_groups.getGroupById(userid)
+            fullname = group.getProperty("title")
+            if fullname:
+                return fullname
+            else:
+                logger.debug("Looking up full name for nonexistent member.")
+                return userid
 
     def getFilteredNames(self, filter):
         """ Return a JSON list of users, filtered by id or name.
