@@ -103,9 +103,11 @@
                 <tal:form_actions_top
                     define="owner python:form"
                     condition= "python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
+                    <span class="actionButtonsTop">
                     <span metal:use-macro="here/ActionBar/macros/EditDocumentActionBar" >
                         display form actions above form fields
                     </span><br/>
+                    </span>
                 </tal:form_actions_top>
 
                 <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>

@@ -160,7 +160,9 @@
                         <tal:block_actionbar_top 
                             define="owner python:form"
                             condition="python:b and form.ActionBarPosition in ['TOP', 'BOTH']">
+                            <span class="actionButtonsTop">
                             <span metal:use-macro="here/ActionBar/macros/SearchFormActionBar">display form actions</span><br/>
+                            </span>
                         </tal:block_actionbar_top>
                     </tal:block_has_readpermission>
 
