@@ -37,8 +37,10 @@
                 <tal:view_actions
                     define="owner python:plomino_view"
                     condition="python:b and plomino_view.ActionBarPosition in ['TOP', 'BOTH']">
+                    <span class="actionButtonsTop">
                     <span metal:use-macro="here/ActionBar/macros/ViewActionBar">
                     display view actions </span>
+                    </span>
                 </tal:view_actions>
             </tal:hasReadPermission>
 
