@@ -337,6 +337,8 @@ class PlominoDatabase(ATFolder, PlominoAccessControl, PlominoDesignManager,
     def getForm(self, formname):
         """ Return a PlominoForm
         """
+        if isinstance(formname, (list, tuple)):
+            formname = formname[0]
         obj = getattr(self, formname, None)
         if obj and obj.Type() == 'PlominoForm':
             return obj
