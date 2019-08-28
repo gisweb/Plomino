@@ -1025,7 +1025,10 @@ class PlominoDesignManager(Persistent):
             adapt = obj.getSettings()
             if adapt is not None:
                 items = {}
-                for k in adapt.parameters.keys():
+                #modifica robystar per esportare gli xml sempre uguali
+                keys = adapt.parameters.keys()
+                keys.sort()
+                for k in keys:
                     if hasattr(adapt, k):
                         items[k] = adapt.parameters[k]
                 #items = dict(adapt.parameters)
