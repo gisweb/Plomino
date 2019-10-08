@@ -845,9 +845,14 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # If so, mention it. If not, can it go?
         if filename == '':
             filename = submittedValue.filename
+
         if filename:
             if """\\""" in filename:
                 filename = filename.split("\\")[-1]
+            #fixed robystar    
+            while "__" in filename:
+                filename = filename.replace("__","_")
+
             filename = '.'.join(
                     [normalizeString(s, encoding='utf-8') 
                         for s in filename.split('.')])
