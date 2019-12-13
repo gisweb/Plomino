@@ -96,6 +96,7 @@ extra_schema_attributes = ['excludeFromNav']
 import logging
 logger = logging.getLogger('Plomino')
 
+from collections import OrderedDict
 
 STR_FORMULA = """plominoContext = context
 plominoDocument = context
@@ -1024,13 +1025,16 @@ class PlominoDesignManager(Persistent):
         if obj.Type() == "PlominoField":
             adapt = obj.getSettings()
             if adapt is not None:
-                items = {}
+                #import pdb;pdb.set_trace()
+                
+                items = ()
                 #modifica robystar per esportare gli xml sempre uguali
                 keys = adapt.parameters.keys()
                 keys.sort()
                 for k in keys:
                     if hasattr(adapt, k):
-                        items[k] = adapt.parameters[k]
+                        items = items + ({k:adapt.parameters[k]},)
+                
                 #items = dict(adapt.parameters)
                 if items:
                     # export field settings
