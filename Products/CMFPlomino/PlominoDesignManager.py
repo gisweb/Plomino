@@ -1305,21 +1305,23 @@ class PlominoDesignManager(Persistent):
                     # specific settings
                     result, method = xmlrpclib.loads(node.toxml().encode('utf-8'))
                     parameters = result[0]
-                    for key in parameters.keys():
-                        v = parameters[key]
-                        if v is not None:
-                            if hasattr(v, 'encode'):
-                                v = unicode(v)
-                            else:
-                                if hasattr(v, 'append'):
-                                    uv = []
-                                    for e in v:
-                                        if hasattr(e, 'encode'):
-                                            uv.append(unicode(e))
-                                        else:
-                                            uv.append(e)
-                                    v = uv
-                            settings_values[key] = v
+                    #import pdb;pdb.set_trace()
+                    for param in parameters:
+                        for key in param.keys():
+                            v = param[key]
+                            if v is not None:
+                                if hasattr(v, 'encode'):
+                                    v = unicode(v)
+                                else:
+                                    if hasattr(v, 'append'):
+                                        uv = []
+                                        for e in v:
+                                            if hasattr(e, 'encode'):
+                                                uv.append(unicode(e))
+                                            else:
+                                                uv.append(e)
+                                        v = uv
+                                settings_values[key] = v
                 elif name == "CustomData":
                     # Only one non.text child is expected
                     customnode = [el for el in child.childNodes if el.nodeName!='#text'][0]
