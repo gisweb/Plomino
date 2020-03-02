@@ -812,6 +812,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return None
 
         file_obj = self.get(filename, None)
+
+        ### hack per file p7m
+        if filename[-4:]=='.p7m':
+            filename = DateToString(DateTime(),format="(%Y%m%d%H%M%S)")+filename
+
         if not file_obj:
             return None
         if asFile:
