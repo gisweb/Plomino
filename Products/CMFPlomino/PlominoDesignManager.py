@@ -79,6 +79,7 @@ from Products.CMFPlomino.PlominoForm import schema as form_schema
 from Products.CMFPlomino.PlominoHidewhen import schema as hidewhen_schema
 from Products.CMFPlomino.PlominoView import schema as view_schema
 from Products.CMFPlomino import get_resource_directory
+import time
 
 plomino_schemas = {
         'PlominoAction': action_schema,
@@ -265,6 +266,8 @@ class PlominoDesignManager(Persistent):
         if views_only:
             label = "views"
         self.setStatus("Re-indexing %s (0%%)" % label)
+        start = time.time()
+
 
         indexes = plomino_index.indexes()
         view_indexes = [idx for idx in indexes
@@ -298,6 +301,8 @@ class PlominoDesignManager(Persistent):
                 logger.info("Re-indexing %s: "
                         "%d indexed successfully, %d errors(s)..." % (
                             label, total, errors))
+
+        elapsed = time.time() - start
         if changed_since:
             msg = ("Intermediary changes: "
                     "%d modified documents re-indexed successfully, "
@@ -305,7 +310,7 @@ class PlominoDesignManager(Persistent):
         else:
             msg = ("Re-indexing %s: "
                     "%d documents indexed successfully, "
-                    "%d errors(s)" % (label, total, errors))
+                    "%d errors(s) in %s seconds" % (label, total, errors, int(elapsed)))
         logger.info(msg)
         return msg
 
