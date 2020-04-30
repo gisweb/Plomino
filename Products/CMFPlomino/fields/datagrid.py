@@ -177,22 +177,27 @@ class DatagridField(BaseField):
         """
         if not self.field_mapping:
             return []
-        
-        mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
-        
-        child_form_id = self.associated_form
-        if not child_form_id:
-            return mapped_fields
 
-        db = self.context.getParentDatabase()
+        #modifica gisweb: meglio prendere le colonne definite nei settings (se non si pianta) per omogeneità con il datagrid in edit
+        try:
+            columns = json.loads("{"+self.getParameters()+"}")["aoColumns"]
+            return [column['sTitle'] for column in columns]
+        except: 
+            mapped_fields = [ f.strip() for f in self.field_mapping.split(',')]
+            
+            child_form_id = self.associated_form
+            if not child_form_id:
+                return mapped_fields
 
-        # get child form
-        child_form = db.getForm(child_form_id)
-        if not child_form:
-            return mapped_fields
+            db = self.context.getParentDatabase()
 
-        # return title for each mapped field if this one exists in the child form
-        return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
+            # get child form
+            child_form = db.getForm(child_form_id)
+            if not child_form:
+                return mapped_fields
+
+            # return title for each mapped field if this one exists in the child form
+            return [f.Title() for f in [child_form.getFormField(f) for f in mapped_fields] if f]
 
     def getRenderedFields(self, editmode=True, creation=False, request={}):
         """ Return an array of rows rendered using the associated form fields
