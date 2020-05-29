@@ -10,11 +10,12 @@ $(document).ready(function() {
 	$("h4.plomino-accordion-header").parent().accordion({
 		header: "h4.plomino-accordion-header", active: false, collapsible: true, autoHeight: false
 	});
+	
 	$("h3.plomino-accordion-header").parent().accordion({
 		header: "h3.plomino-accordion-header", active: false, collapsible: true, heightStyle: "content"
 	});
-	
-	$(".plomino-accordion-header").click(function(e) {
+
+	$(document).on("click",".plomino-accordion-header",null,function(e){
         url = $(this).find("a").attr("href");
         if(url!="#") {
            var contentDiv = $(this).next("div");
