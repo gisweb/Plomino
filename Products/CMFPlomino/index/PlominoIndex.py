@@ -190,9 +190,10 @@ class PlominoIndex(UniqueObject, CatalogTool):
             # instead of id
             # There is possible username is 'Anonymous'
             user_id = self.getCurrentMember().getId()
+            user_name = self.getCurrentMember().getUserName()
             if not getToolByName(self, 'portal_membership').isAnonymousUser():
                 user_groups_roles += (
-                    [user_id] +
+                    [user_id,user_name] +
                     self.getCurrentUserGroups() +
                     self.getCurrentUserRoles())
             request['getPlominoReaders'] = user_groups_roles
