@@ -180,7 +180,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         """
         ### fix robystar i plomino editor vedono tutti i risultati
-        if only_allowed and not 'PlominoEditor' in self.getCurrentUserRights():
+        if only_allowed and not ('PlominoReader' in self.getCurrentUserRights() or 'PlominoEditor' in self.getCurrentUserRights()):
             user_groups_roles = ['Anonymous', '*']
             # when me is < SpecialUser 'Anonymous User' >
             # then me.id is 'acl_users'
