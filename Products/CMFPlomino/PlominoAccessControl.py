@@ -279,6 +279,11 @@ class PlominoAccessControl(Persistent):
             if ('*' in allowed_readers or
                     self.checkUserPermission(ACL_PERMISSION)):
                 isreader = True
+                
+            ### modifica robystar per forzare i readers settati in ACL
+            elif 'PlominoReader' in self.getCurrentUserRights():
+                isreader = True
+
             else:
                 user_id = self.getCurrentMember().getId()
                 if api.user.is_anonymous():
