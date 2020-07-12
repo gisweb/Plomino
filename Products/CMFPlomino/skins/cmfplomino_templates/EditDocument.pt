@@ -114,7 +114,11 @@
                 <div tal:replace="structure provider:plone.belowcontenttitle" />
                 <div tal:replace="structure provider:plone.abovecontentbody" />
                 <div tal:replace="structure python:here.editWithForm(form)" />
-
+                <tal:redirecturl tal:condition="python: 'plominoredirecturl' in context.REQUEST.keys()">
+                    <input type="hidden"
+                        name="plominoredirecturl"
+                        tal:attributes="value here/REQUEST/plominoredirecturl|nothing" />
+                </tal:redirecturl>
                 <tal:form_actions_bottom
                     define="owner python:form"
                     condition="python:b and form.ActionBarPosition in ['BOTTOM', 'BOTH']">
