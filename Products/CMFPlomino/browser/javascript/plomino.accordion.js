@@ -16,9 +16,11 @@ $(document).ready(function() {
 	});
 
 	$(document).on("click",".plomino-accordion-header",null,function(e){
+				e.preventDefault();
         url = $(this).find("a").attr("href");
         if(url!="#") {
            var contentDiv = $(this).next("div");
+           contentDiv.removeClass("invisible");
            contentDiv.load($(this).find("a").attr("href")+" #content");
            $(this).find("a").attr("href", "#");
         }
