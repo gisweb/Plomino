@@ -605,7 +605,7 @@ class PlominoForm(ATFolder):
                             and " class='required'"
                             or '')
                     html_content_processed = label_re.sub(
-                            "<label for='%s'%s>%s</label>" % (fn, mandatory, label),
+                            "<label class='label' for='%s'%s>%s</label>" % (fn, mandatory, label),
                             html_content_processed, count=1)
                 else:
                     html_content_processed = label_re.sub(
