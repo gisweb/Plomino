@@ -602,10 +602,10 @@ class PlominoForm(ATFolder):
                 if editmode and (field_type not in ['COMPUTED', 'DISPLAY']):
                     mandatory = (
                             field.getMandatory()
-                            and " class='required'"
-                            or '')
+                            and " class='label required'"
+                            or " class='label'")
                     html_content_processed = label_re.sub(
-                            "<label class='label' for='%s'%s>%s</label>" % (fn, mandatory, label),
+                            "<label for='%s'%s>%s</label>" % (fn, mandatory, label),
                             html_content_processed, count=1)
                 else:
                     html_content_processed = label_re.sub(
