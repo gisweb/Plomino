@@ -71,6 +71,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         self.addColumn('id')
         self.addIndex('getPlominoReaders', "KeywordIndex")
         self.addIndex('path', "ExtendedPathIndex")
+        self.addIndex('Plomino_LastUpdate', "DateIndex")
 
         if FULLTEXT:
             self.createFieldIndex('SearchableText', 'RICHTEXT')

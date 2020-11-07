@@ -522,6 +522,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     e.reportError('Document saved, but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
+
+
+        # MODIFICA robystar
+        self.setItem("Plomino_LastUpdate",DateTime())
+
         
         notify(PlominoAfterDocumentSaveEvent(self))
 
